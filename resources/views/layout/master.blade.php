@@ -5,7 +5,9 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
 	<!-- title -->
 	<title>Fruitkha - Slider Version</title>
 
@@ -77,16 +79,12 @@
                                         </ul>
                                     </li>
                                 @endguest
-								{{-- <li><a href="news.html">News</a></li> --}}
-								{{-- <li><a href="contact.html">Contact</a></li> --}}
-								{{-- <li><a href="shop.html">Shop</a></li> --}}
-								{{-- <li> --}}
-									{{-- <div class="header-icons"> --}}
-                                    {{-- <a class="shopping-cart" href="cart.html"><i class="fas fa-shopping-cart"></i></a> --}}
-                                {{-- </li> --}}
+
                                 <li>
-                                    <a class="mobile-hide search-bar-icon" href="cart.html"><i class="fas fa-shopping-cart"></i></a>
-                                    <a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+                                    <div class="header-icons">
+                                        <a class="shopping-cart" href="{{route("cart")}}"><i class="fas fa-shopping-cart"></i></a>
+                                        <a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+                                    </div>
 								</li>
 							</ul>
 						</nav>

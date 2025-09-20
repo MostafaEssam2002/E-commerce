@@ -26,16 +26,186 @@
 						</div>
 						<h3>{{$item->name}}</h3>
 						<p class="product-price"><span>{{$item->quantity}}</span> {{$item->price}}$ </p>
-						<a href="cart.html" class="cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
-						<a href="/removeproduct/{{$item->id}}" class="cart-btn" style="background-color: red"><i class="fas fa-shopping-cart"></i> Remove Product</a>
-                        {{-- <br> --}}
+
+						<!-- Updated Add to Cart Button with AJAX -->
+						<button class="cart-btn add-to-cart-btn" id="Add_to_Cart"  data-product-id="{{$item->id}}">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+
+						<a href="/removeproduct/{{$item->id}}" class="cart-btn" style="background-color: red">
+                            <i class="fas fa-shopping-cart"></i> Remove Product
+                        </a>
                         <br>
                         <br>
-						<a href="/editproduct/{{$item->id}}" class="cart-btn" style="background-color: blue"><i class="fas fa-shopping-cart"></i> Edit Product</a>
+						<a href="/editproduct/{{$item->id}}" class="cart-btn" style="background-color: blue">
+                            <i class="fas fa-shopping-cart"></i> Edit Product
+                        </a>
 					</div>
 				</div>
                 @endforeach
 			</div>
 		</div>
 	</div>
+
+<!-- Success/Error Message Modal or Alert -->
+<div id="message-alert" class="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+    <span id="message-text"></span>
+    <button type="button" class="close" onclick="closeAlert()">&times;</button>
+</div>
+
+@endsection
+
+@section('js')
+<script>
+$(document).ready(function() {
+    console.log('Script loaded and ready!');
+
+    // CSRF Token setup for AJAX
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Add to Cart AJAX
+    $('.add-to-cart-btn').on('click', function(e) {
+        e.preventDefault();
+        console.log('Button clicked!');
+
+        var button = $(this);
+        var productId = button.data('product-id');
+        console.log('Product ID:', productId);
+
+        // Disable button during request
+        button.prop('disabled', true);
+        button.html('<i class="fas fa-spinner fa-spin"></i> Adding...');
+
+        $.ajax({
+            url: '{{ route("add_to_cart") }}',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                console.log('Success response:', response);
+                if (response.success) {
+                    showMessage(response.message, 'success');
+                } else {
+                    showMessage(response.message || 'Something went wrong!', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', xhr, status, error);
+                var errorMessage = 'Something went wrong!';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    var errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage = errors.join(', ');
+                }
+                showMessage(errorMessage, 'error');
+            },
+            complete: function() {
+                // Re-enable button
+                button.prop('disabled', false);
+                button.html('<i class="fas fa-shopping-cart"></i> Add to Cart');
+            }
+        });
+    });
+});
+
+// Show message function
+function showMessage(message, type) {
+    var alertBox = $('#message-alert');
+    var messageText = $('#message-text');
+
+    messageText.text(message);
+
+    // Remove existing classes and add appropriate class
+    alertBox.removeClass('alert-success alert-danger alert-info alert-warning');
+
+    if (type === 'success') {
+        alertBox.addClass('alert-success');
+    } else if (type === 'error') {
+        alertBox.addClass('alert-danger');
+    } else {
+        alertBox.addClass('alert-info');
+    }
+
+    alertBox.show();
+
+    // Auto hide after 4 seconds
+    setTimeout(function() {
+        alertBox.fadeOut();
+    }, 4000);
+}
+
+// Close alert function
+function closeAlert() {
+    $('#message-alert').fadeOut();
+}
+</script>
+
+<style>
+/* Alert Styles */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    position: relative;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.alert .close {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: inherit;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.alert .close:hover {
+    opacity: 1;
+}
+
+/* Button loading state */
+.add-to-cart-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Make sure button looks like other cart buttons */
+.add-to-cart-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+</style>
 @endsection

@@ -2757,3 +2757,7 @@ display: table-cell;
 vertical-align: middle;
 width: 100%;
 }
+
+#Add_to_Cart{
+    border-radius:50px;border-style: none ;font-family: 'Poppins', sans-serif;display: inline-block;background-color: #F28123;color: #fff;padding: 10px 20px;
+}

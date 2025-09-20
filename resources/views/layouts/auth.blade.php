@@ -100,7 +100,7 @@
 										<li><a href="shop.html">Shop</a></li>
 										<li><a href="checkout.html">Check Out</a></li>
 										<li><a href="single-product.html">Single Product</a></li>
-										<li><a href="cart.html">Cart</a></li>
+										<li><a href="{{route("cart")}}">Cart</a></li>
 									</ul>
 								</li>
 								{{-- <li>

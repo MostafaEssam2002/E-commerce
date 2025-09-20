@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\FirstController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 // use App\Models\products;
 // use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,13 @@ Route::get('/editproduct/{productid}', [ProductController::class, 'editProduct']
 Route::post('/editproduct/{productid}', [ProductController::class, 'storeProduct']);
 Route::get("/productstable",[ProductController::class,'productstable'])->name("productstable");
 
+Route::get("/cart",[CartController::class,'cart'])->name("cart")->middleware("auth");
+Route::post("/change_quantity",[CartController::class,'change_quantity'])->name("change_quantity")->middleware("auth");
+Route::post("/add_to_cart",[CartController::class,'add_to_cart'])->name("add_to_cart")->middleware("auth");
+Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
+Route::post('/add-to-cart', [CartController::class, 'add_to_cart'])->name('add_to_cart');
+Route::post('/remove-from-cart', [CartController::class, 'remove_from_cart'])->name('remove_from_cart');
+Route::post("/change-quantity", [CartController::class, 'change_quantity'])->name('change_quantity')->middleware('auth');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

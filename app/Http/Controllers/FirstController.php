@@ -9,10 +9,10 @@ class FirstController extends Controller
 {
     function MainPage(){
         if(Auth::check()){
-            $result = categories::paginate(6);
+            $result = products::paginate(6);
         }
         else{
-            $result = categories::paginate(3);
+            $result = products::paginate(3);
         }
         return view("welcome",["categories"=>$result]);
     }

@@ -16,7 +16,7 @@
                     <form method="POST" action="/storeproduct" enctype="multipart/form-data" id="fruitkha-contact"  >
 
                         {{-- <form method="POST" action="edit_product/{{$product->id}}" id="fruitkha-contact"  > --}}
-                        @csrf()
+                        @csrf 
                         <p>
                             <input type="text" hidden placeholder="id" name="id" id="id" value="{{$product->id}}" style="width: 100%">
                             <span class="text-danger">

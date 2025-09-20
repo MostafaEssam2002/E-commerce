@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string("name")->nullable(false);
             $table->text("description")->nullable();
             $table->decimal("price",8,2)->nullable(false);
+            $table->decimal("shipping",8,2)->nullable(true)->default(0); ;
             $table->string("image_path")->nullable();
             $table->integer("quantity")->nullable()->default(0);
             $table->unsignedBigInteger('category_id');

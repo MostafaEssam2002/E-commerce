@@ -1,7 +1,3 @@
-{{-- <h1>{{$categories}}</h1> --}}
-{{-- @foreach ($categories as $item)
-    <h1>{{$item->name}}</h1>
-@endforeac?h --}}
 @extends('layout.master')
 @section('content')
 <div class="product-section mt-150 mb-150">
@@ -23,13 +19,18 @@
                                 <a href="{{route("prods",["catid"=>$item->id])}}"><img  src="{{url($item->image_path)}}" alt=""></a>
                             </div>
                             <h3>{{$item->name}}</h3>
-                            <p class="product-price"><span>Per Kg</span>  </p>
-                            <a href="cart.html" class="cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+                            <p class="product-price"><span>Per Kg</span></p>
+
+                            <!-- Updated Add to Cart Button with AJAX -->
+                            <button class="cart-btn add-to-cart-btn" id="Add_to_Cart"   data-product-id="{{$item->id}}">
+                            {{-- <button class="cart-btn add-to-cart-btn" id="Add_to_Cart" style=""  data-product-id="{{$item->id}}"> --}}
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
                         </div>
                     </div>
                 @endforeach
 			</div>
-            {{-- {{$categories->links()}} --}}
+
         <div class="row">
             <div class="container">
                 <div class="row">
@@ -64,11 +65,169 @@
         </div>
 		</div>
 	</div>
-    <style>
-        .pagination{
-        }
-    </style>
+
+<!-- Success/Error Message Modal or Alert -->
+<div id="message-alert" class="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+    <span id="message-text"></span>
+    <button type="button" class="close" onclick="closeAlert()">&times;</button>
+</div>
+
 @endsection
-{{-- @section('xyz')
-<h1>xyz section</h1>
-@endsection --}}
+
+@section('js')
+<script>
+$(document).ready(function() {
+    console.log('Welcome page script loaded and ready!');
+
+    // CSRF Token setup for AJAX
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Add to Cart AJAX
+    $('.add-to-cart-btn').on('click', function(e) {
+        e.preventDefault();
+        console.log('Category add to cart button clicked!');
+
+        var button = $(this);
+        var productId = button.data('product-id');
+        console.log('Category ID:', productId);
+
+        // Disable button during request
+        button.prop('disabled', true);
+        button.html('<i class="fas fa-spinner fa-spin"></i> Adding...');
+
+        $.ajax({
+            url: '{{ route("add_to_cart") }}',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                console.log('Success response:', response);
+                if (response.success) {
+                    showMessage(response.message, 'success');
+                } else {
+                    showMessage(response.message || 'Something went wrong!', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', xhr, status, error);
+                var errorMessage = 'Something went wrong!';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    var errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage = errors.join(', ');
+                }
+                showMessage(errorMessage, 'error');
+            },
+            complete: function() {
+                // Re-enable button
+                button.prop('disabled', false);
+                button.html('<i class="fas fa-shopping-cart"></i> Add to Cart');
+            }
+        });
+    });
+});
+
+// Show message function
+function showMessage(message, type) {
+    var alertBox = $('#message-alert');
+    var messageText = $('#message-text');
+
+    messageText.text(message);
+
+    // Remove existing classes and add appropriate class
+    alertBox.removeClass('alert-success alert-danger alert-info alert-warning');
+
+    if (type === 'success') {
+        alertBox.addClass('alert-success');
+    } else if (type === 'error') {
+        alertBox.addClass('alert-danger');
+    } else {
+        alertBox.addClass('alert-info');
+    }
+
+    alertBox.show();
+
+    // Auto hide after 4 seconds
+    setTimeout(function() {
+        alertBox.fadeOut();
+    }, 4000);
+}
+
+// Close alert function
+function closeAlert() {
+    $('#message-alert').fadeOut();
+}
+</script>
+
+<style>
+.pagination{
+}
+
+/* Alert Styles */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    position: relative;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.alert .close {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: inherit;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.alert .close:hover {
+    opacity: 1;
+}
+
+/* Button loading state */
+.add-to-cart-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Make sure button looks like other cart buttons */
+.add-to-cart-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+</style>
+@endsection

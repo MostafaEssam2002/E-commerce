@@ -53,6 +53,14 @@
                             </span>
                         </p>
                         <p>
+                            <input type="number" placeholder="shipping" name="shipping" id="shipping" value="{{old("shipping")}}" style="width: 100%">
+                            <span class="text-danger">
+                                @error('shipping')
+                                {{$message}}
+                                @enderror
+                            </span>
+                        </p>
+                        <p>
                             <select name="category_id" id="category_id" class="form-control">
                                 {{old("category_id")}}
                                 @foreach ($categories as $item)
