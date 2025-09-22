@@ -1,23 +1,25 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\categories;
-use App\Models\products;
+use App\Models\Product;
+use App\Models\productImages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+
+use function PHPUnit\Framework\isNumeric;
+
 class ProductController extends Controller
 {
     function add($num){
         return $num+1;
     }
     function productstable(){
-        $products=products::all();
+        $products=Product::all();
         return view("products.productTable",["products"=>$products]);
     }
 
         function addproduct(){
-        // $user = (Auth::user());
-        // $categories = categories::select('id','name')->get();
             if(Auth::check()){
                 $categories = categories::all();
             }
@@ -38,7 +40,7 @@ class ProductController extends Controller
             'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $currentProduct = products::find($request->id);
+        $currentProduct = Product::find($request->id);
         if (!$currentProduct) {
             return redirect(route('prods'))->with('error', 'Product not found');
         }
@@ -72,7 +74,7 @@ class ProductController extends Controller
             'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $newProduct = new products();
+        $newProduct = new Product();
         $newProduct->name = $request->name;
         $newProduct->price = $request->price;
         $newProduct->quantity = $request->quantity;
@@ -95,7 +97,7 @@ class ProductController extends Controller
 
     function removeProduct($productid=null){
         if($productid !=null){
-            $product = products::find($productid);
+            $product = Product::find($productid);
             $product->delete();
             return redirect(route("prods"));
         }
@@ -105,7 +107,7 @@ class ProductController extends Controller
     }
     public function editProduct ($productid=null){
         if($productid!=null){
-            $product=products::find($productid);
+            $product=Product::find($productid);
             $categories=categories::all();
             if ($product){
                 return view("products.editproduct",["product"=>$product,"productid"=>$productid,"categories"=>$categories]);
@@ -126,7 +128,7 @@ class ProductController extends Controller
             "category_id"=>"required"
         ]);
         if($productid!=null){
-            $updated_product=products::find($productid);
+            $updated_product=Product::find($productid);
             $updated_product->name=$request->name;
             $updated_product->price=$request->price;
             $updated_product->quantity=$request->quantity;
@@ -137,6 +139,25 @@ class ProductController extends Controller
         }
         else{
             return view("layout.404")->with(['error'=>'Error Product Cannot be Found',"code"=>"404"]);
+        }
+    }
+    public function AddProductImages($id){
+        $product = Product::find($id);
+        return view("products.AddProductImages",["product"=>$product]);
+    }
+    public function ShowProduct($id ){
+        $id = (int )($id);
+        if ($id>0){
+            $product = Product::find($id);
+            if($product){
+                $related_products =Product::where("category_id",$product->category_id)->get();
+                return view("products.single_product",["product"=>$product,"related_products"=>$related_products]);
+            }else{
+                return redirect("/");
+            }
+        }
+        else{
+            return redirect("/");
         }
     }
 }

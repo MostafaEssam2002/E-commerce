@@ -20,10 +20,8 @@
                             </div>
                             <h3>{{$item->name}}</h3>
                             <p class="product-price"><span>Per Kg</span></p>
-
                             <!-- Updated Add to Cart Button with AJAX -->
                             <button class="cart-btn add-to-cart-btn" id="Add_to_Cart"   data-product-id="{{$item->id}}">
-                            {{-- <button class="cart-btn add-to-cart-btn" id="Add_to_Cart" style=""  data-product-id="{{$item->id}}"> --}}
                                 <i class="fas fa-shopping-cart"></i> Add to Cart
                             </button>
                         </div>

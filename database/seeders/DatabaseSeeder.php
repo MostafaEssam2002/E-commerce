@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 use App\Models\categories;
-use App\Models\products;
+use App\Models\Product;
 use App\Models\Review;
 use Illuminate\Database\Seeder;
 
@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             ["id"=>3,"name"=>"Jacob Sikim","email"=>"JacobSikim@gmail.com","phone"=>"01148090115","subject"=>"Local shop owner","message"=>"Sed ut perspiciatis unde omnis iste natus error veritatis et  quasi architecto beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium","image_path"=>"assets/img/avaters/avatar3.png"],
         ];
         categories::insert($categories);
-        products::insert($products);
+        Product::insert($products);
         Review::insert($reviews);
     }
 }

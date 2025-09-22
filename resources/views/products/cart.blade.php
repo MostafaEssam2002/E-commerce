@@ -1,5 +1,4 @@
 @extends('layout.master')
-
 @section('content')
 <div class="cart-section mt-150 mb-150">
     <div class="container">
@@ -90,7 +89,17 @@
                             </tr>
                             <tr class="total-data">
                                 <td><strong>Total: </strong></td>
-                                <td class="final-total">${{ $finalTotal }}</td>
+                                <td class="final-total">
+                                    @if (session()->has('finalTotalAfterCopon'))
+                                        <del>${{ $finalTotal }}</del> ${{ session('finalTotalAfterCopon') }}
+                                    @else
+                                        ${{ $finalTotal }}
+                                    @endif
+
+                                    @if(session('error'))
+                                        <div class="alert alert-danger">{{ session('error') }}</div>
+                                    @endif
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -99,13 +108,14 @@
                         <a href="checkout.html" class="boxed-btn black">Check Out</a>
                     </div>
                 </div>
-
                 <div class="coupon-section">
                     <h3>Apply Coupon</h3>
                     <div class="coupon-form-wrap">
-                        <form action="index.html">
-                            <p><input type="text" placeholder="Coupon"></p>
-                            <p><input type="submit" value="Apply"></p>
+                        <form method="POST" action="{{route("copon")}}">
+                            @csrf
+                        <input type="hidden" name="total" value="{{$finalTotal}}">
+                        <p><input type="text" name="copon" placeholder="Coupon"></p>
+                        <p><input type="submit" value="Apply"></p>
                         </form>
                     </div>
                 </div>
@@ -113,35 +123,52 @@
         </div>
     </div>
 </div>
-
-<!-- Alert Messages -->
-<div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 @endsection
 
 @section('js')
 <script>
 $(document).ready(function() {
-    // CSRF Token setup
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
     let updateTimeout;
     let isUpdating = false;
 
-    // Remove from cart function
+    // دالة محلية لتحديث العدد في أيقونة السلة
+    function updateCartBadgeLocal() {
+        const cartCount = $('.table-body-row').length;
+        const cartBadge = $('#cart_count');
+
+        if (cartBadge.length) {
+            cartBadge.text(cartCount);
+
+            // إضافة تأثير التحديث
+            cartBadge.addClass('updated');
+            setTimeout(function() {
+                cartBadge.removeClass('updated');
+            }, 600);
+
+            // للأرقام الكبيرة
+            if (cartCount > 99) {
+                cartBadge.addClass('large-number');
+                cartBadge.text('99+');
+            } else {
+                cartBadge.removeClass('large-number');
+            }
+
+            // إخفاء الشارة إذا كان العدد صفر
+            if (cartCount === 0) {
+                cartBadge.attr('data-count', '0');
+            } else {
+                cartBadge.removeAttr('data-count');
+            }
+        }
+    }
+
+    // Remove from cart function (محدث)
     $(document).on('click', '.remove-from-cart-btn', function(e) {
         e.preventDefault();
 
         const button = $(this);
         const productId = button.data('product-id');
         const row = $('#cart-item-' + productId);
-
-        console.log('Attempting to remove product ID:', productId);
-
-        // Remove confirmation dialog - direct removal
 
         // Show loading state
         const originalIcon = button.html();
@@ -158,15 +185,16 @@ $(document).ready(function() {
             },
             timeout: 10000,
             success: function(response) {
-                console.log('Remove response:', response);
-
                 if (response.success) {
-                    // Animate and remove row (faster animation)
+                    // Animate and remove row
                     row.fadeOut(200, function() {
                         $(this).remove();
 
                         // Update totals
                         updateTotalAmounts();
+
+                        // تحديث عدد السلة
+                        updateCartBadgeLocal();
 
                         // Check if cart is empty
                         if ($('.table-body-row').length === 0) {
@@ -175,39 +203,14 @@ $(document).ready(function() {
                             $('.total-section').hide();
                         }
                     });
-
-                    showAlert(response.message, 'success');
                 } else {
-                    showAlert(response.message || 'Failed to remove item', 'error');
                     // Restore button
                     button.html(originalIcon);
                     button.prop('disabled', false);
                 }
             },
             error: function(xhr, status, error) {
-                console.error('AJAX Error Details:', {
-                    status: xhr.status,
-                    statusText: xhr.statusText,
-                    responseText: xhr.responseText,
-                    error: error
-                });
-
-                let errorMessage = 'Failed to remove item from cart';
-
-                if (xhr.status === 404) {
-                    errorMessage = 'Route not found. Please check your routes.';
-                } else if (xhr.status === 422) {
-                    errorMessage = 'Validation error occurred.';
-                } else if (xhr.status === 500) {
-                    errorMessage = 'Server error occurred.';
-                } else if (xhr.status === 419) {
-                    errorMessage = 'Session expired. Please refresh the page.';
-                } else if (status === 'timeout') {
-                    errorMessage = 'Request timed out. Please try again.';
-                }
-
-                showAlert(errorMessage, 'error');
-
+                console.error('Remove from cart error:', error);
                 // Restore button
                 button.html(originalIcon);
                 button.prop('disabled', false);
@@ -248,7 +251,6 @@ $(document).ready(function() {
         isUpdating = true;
 
         if (quantity < 1) {
-            showAlert('Quantity must be greater than zero', 'error');
             inputElement.val(1);
             isUpdating = false;
             return;
@@ -282,16 +284,11 @@ $(document).ready(function() {
                     setTimeout(function() {
                         inputElement.parent().removeClass('updated');
                     }, 600);
-
-                    showAlert('Quantity updated', 'success', 1500);
-                } else {
-                    showAlert(response.message, 'error');
                 }
             },
             error: function(xhr, status, error) {
                 inputElement.siblings('.loading-spinner').hide();
                 isUpdating = false;
-                showAlert('Failed to update quantity', 'error');
                 console.error('Update quantity error:', error);
             }
         });
@@ -313,23 +310,8 @@ $(document).ready(function() {
         $('.final-total').text('$' + (subtotal + shipping).toFixed(2));
     }
 
-    function showAlert(message, type, duration = 3000) {
-        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-        const alertHtml = `
-            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="close" data-dismiss="alert">
-                    <span>&times;</span>
-                </button>
-            </div>
-        `;
-
-        $('#alert-container').html(alertHtml);
-
-        setTimeout(function() {
-            $('.alert').fadeOut();
-        }, duration);
-    }
+    // تحديث العدد عند تحميل الصفحة
+    updateCartBadgeLocal();
 });
 </script>
 @endsection

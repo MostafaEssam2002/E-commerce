@@ -16,7 +16,7 @@
                     <form method="POST" action="/storeproduct" enctype="multipart/form-data" id="fruitkha-contact"  >
 
                         {{-- <form method="POST" action="edit_product/{{$product->id}}" id="fruitkha-contact"  > --}}
-                        @csrf 
+                        @csrf
                         <p>
                             <input type="text" hidden placeholder="id" name="id" id="id" value="{{$product->id}}" style="width: 100%">
                             <span class="text-danger">
@@ -61,14 +61,12 @@
                                 @foreach ($categories as $item)
                                     @if ($item->id==$product->category_id)
                                         <option value="{{ $item->id }}" selected>{{ $item->name }}</option>
-
                                         @else
                                         <option value="{{ $item->id }}" >{{ $item->name }}</option>
                                     @endif
                                         {{ $item->name }}
                                 @endforeach
                             </select>
-
                         </p>
                         <span>
                             @error('category_id')

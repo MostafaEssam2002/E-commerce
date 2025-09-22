@@ -69,6 +69,9 @@
                     <a href="{{route('removeproduct',['productid'=>$item->id])}}" class="btn btn-danger">
                         <i class="fas fa-trash"></i> Delete product
                     </a>
+                    <a href="{{route('AddProductImages',['productid'=>$item->id])}}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Add images
+                    </a>
                 </td>
             </tr>
             @endforeach

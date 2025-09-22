@@ -28,7 +28,7 @@
 						<p class="product-price"><span>{{$item->quantity}}</span> {{$item->price}}$ </p>
 
 						<!-- Updated Add to Cart Button with AJAX -->
-						<button class="cart-btn add-to-cart-btn" id="Add_to_Cart"  data-product-id="{{$item->id}}">
+						<button class="cart-btn add-to-cart-btn" id="Add_to_Cart" data-product-id="{{$item->id}}">
                             <i class="fas fa-shopping-cart"></i> Add to Cart
                         </button>
 
@@ -67,6 +67,35 @@ $(document).ready(function() {
         }
     });
 
+    // Function to update cart count in header
+    function updateCartCountDisplay(count) {
+        const cartBadge = $('#cart_count');
+
+        if (count > 0) {
+            cartBadge.text(count);
+            cartBadge.removeClass('d-none').show();
+            cartBadge.removeAttr('data-count');
+
+            // Add animation effect
+            cartBadge.addClass('updated');
+            setTimeout(function() {
+                cartBadge.removeClass('updated');
+            }, 600);
+
+            // Handle large numbers
+            if (count > 99) {
+                cartBadge.addClass('large-number');
+                cartBadge.text('99+');
+            } else {
+                cartBadge.removeClass('large-number');
+                cartBadge.text(count);
+            }
+        } else {
+            cartBadge.attr('data-count', '0');
+            cartBadge.text('0');
+        }
+    }
+
     // Add to Cart AJAX
     $('.add-to-cart-btn').on('click', function(e) {
         e.preventDefault();
@@ -78,6 +107,7 @@ $(document).ready(function() {
 
         // Disable button during request
         button.prop('disabled', true);
+        var originalText = button.html();
         button.html('<i class="fas fa-spinner fa-spin"></i> Adding...');
 
         $.ajax({
@@ -89,8 +119,11 @@ $(document).ready(function() {
             },
             success: function(response) {
                 console.log('Success response:', response);
+
                 if (response.success) {
                     showMessage(response.message, 'success');
+                    // Update cart count in header
+                    updateCartCountDisplay(response.cart_count);
                 } else {
                     showMessage(response.message || 'Something went wrong!', 'error');
                 }
@@ -109,11 +142,57 @@ $(document).ready(function() {
             complete: function() {
                 // Re-enable button
                 button.prop('disabled', false);
-                button.html('<i class="fas fa-shopping-cart"></i> Add to Cart');
+                button.html(originalText);
             }
         });
     });
+
+    // Load initial cart count when page loads
+    loadCartCount();
 });
+
+// Function to load cart count from server
+function loadCartCount() {
+    $.ajax({
+        url: '{{ route("cart.count") }}',
+        type: 'GET',
+        success: function(response) {
+            updateCartCountDisplay(response.count);
+        },
+        error: function() {
+            console.log('Failed to load cart count');
+        }
+    });
+}
+
+// Function to update cart count display
+function updateCartCountDisplay(count) {
+    const cartBadge = $('#cart_count');
+
+    if (count > 0) {
+        cartBadge.text(count);
+        cartBadge.removeClass('d-none').show();
+        cartBadge.removeAttr('data-count');
+
+        // Add animation effect
+        cartBadge.addClass('updated');
+        setTimeout(function() {
+            cartBadge.removeClass('updated');
+        }, 600);
+
+        // Handle large numbers
+        if (count > 99) {
+            cartBadge.addClass('large-number');
+            cartBadge.text('99+');
+        } else {
+            cartBadge.removeClass('large-number');
+            cartBadge.text(count);
+        }
+    } else {
+        cartBadge.attr('data-count', '0');
+        cartBadge.text('0');
+    }
+}
 
 // Show message function
 function showMessage(message, type) {
@@ -129,16 +208,18 @@ function showMessage(message, type) {
         alertBox.addClass('alert-success');
     } else if (type === 'error') {
         alertBox.addClass('alert-danger');
+    } else if (type === 'warning') {
+        alertBox.addClass('alert-warning');
     } else {
         alertBox.addClass('alert-info');
     }
 
     alertBox.show();
 
-    // Auto hide after 4 seconds
+    // Auto hide after 5 seconds
     setTimeout(function() {
         alertBox.fadeOut();
-    }, 4000);
+    }, 5000);
 }
 
 // Close alert function
@@ -167,6 +248,12 @@ function closeAlert() {
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
+}
+
+.alert-warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
 }
 
 .alert-info {
@@ -206,6 +293,23 @@ function closeAlert() {
     font: inherit;
     cursor: pointer;
     outline: inherit;
+}
+
+/* Cart badge animations */
+.cart-badge.updated {
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 20%, 60%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    80% {
+        transform: translateY(-5px);
+    }
 }
 </style>
 @endsection

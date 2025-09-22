@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\categories;
-use App\Models\products;
+use App\Models\Product;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,20 +9,20 @@ class FirstController extends Controller
 {
     function MainPage(){
         if(Auth::check()){
-            $result = products::paginate(6);
+            $result = Product::paginate(6);
         }
         else{
-            $result = products::paginate(3);
+            $result = Product::paginate(3);
         }
         return view("welcome",["categories"=>$result]);
     }
     function GetCategoryProduct ($catid=null) {
         if ($catid!=null and is_numeric($catid)) {
-            $result=products::where("category_id",$catid)->get();
+            $result=Product::where("category_id",$catid)->get();
             return view("product",["products"=>$result]);
         }
         elseif($catid==null){
-            $result=products::all();
+            $result=Product::all();
             return view("product",["products"=>$result]);
         }
         else{
@@ -30,7 +30,7 @@ class FirstController extends Controller
         }
     }
     function GetAllCategoriesWithProducts(){
-        $products=products::all();
+        $products=Product::all();
         $categories=categories::all();
         return view("category",["products"=>$products,"categories"=>$categories]);
     }
@@ -65,7 +65,7 @@ class FirstController extends Controller
         if (!$category) {
             return view("layout.404")->with(['error' => 'Category not found',"code"  => "300"]);
         }
-        $products = products::with('category')->whereIn("category_id", $category->pluck('id'))->orderBy('created_at','desc')->get();
+        $products = Product::with('category')->whereIn("category_id", $category->pluck('id'))->orderBy('created_at','desc')->get();
         return view("product", ["products" => $products,"catname"  => $category->pluck("name")]);
     }
 }

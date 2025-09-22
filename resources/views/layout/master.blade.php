@@ -35,6 +35,76 @@
 @yield('css')
 
 </head>
+<style>
+.cart-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ff0000;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    min-width: 18px;
+    padding: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: 2px solid white;
+}
+
+/* إخفاء الشارة إذا كان العدد صفر */
+.cart-badge:empty,
+.cart-badge[data-count="0"] {
+    display: none;
+}
+
+/* تحسينات للأرقام الكبيرة */
+.cart-badge.large-number {
+    font-size: 10px;
+    min-width: 20px;
+    height: 20px;
+    top: -10px;
+    right: -10px;
+}
+
+/* تأثير الحركة عند التحديث */
+.cart-badge.updated {
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 20%, 60%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    80% {
+        transform: translateY(-5px);
+    }
+}
+
+/* تحسينات للموبايل */
+@media (max-width: 768px) {
+    .cart-badge {
+        width: 16px;
+        height: 16px;
+        font-size: 10px;
+        top: -6px;
+        right: -6px;
+    }
+}
+</style>
 <body>
 
 	<!--PreLoader-->
@@ -82,10 +152,15 @@
 
                                 <li>
                                     <div class="header-icons">
-                                        <a class="shopping-cart" href="{{route("cart")}}"><i class="fas fa-shopping-cart"></i></a>
+                                        <a class="shopping-cart" href="{{route("cart")}}">
+                                            <div class="cart-icon-wrapper">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                <span class="cart-badge" id="cart_count" data-count="0">0</span>
+                                            </div>
+                                        </a>
                                         <a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
                                     </div>
-								</li>
+                                </li>
 							</ul>
 						</nav>
 						<a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
@@ -274,6 +349,64 @@
 	<script src="{{asset('assets/js/sticker.js')}}"></script>
 	<!-- main js -->
 	<script src="{{asset('assets/js/main.js')}}"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to update cart count display
+            function updateCartCountDisplay(count) {
+                const cartBadge = $('#cart_count');
+
+                if (count > 0) {
+                    cartBadge.text(count);
+                    cartBadge.removeAttr('data-count');
+                    cartBadge.show();
+
+                    // Add animation effect
+                    cartBadge.addClass('updated');
+                    setTimeout(function() {
+                        cartBadge.removeClass('updated');
+                    }, 600);
+
+                    // Handle large numbers
+                    if (count > 99) {
+                        cartBadge.addClass('large-number');
+                        cartBadge.text('99+');
+                    } else {
+                        cartBadge.removeClass('large-number');
+                        cartBadge.text(count);
+                    }
+                } else {
+                    cartBadge.attr('data-count', '0');
+                    cartBadge.text('0');
+                }
+            }
+
+            // Function to load cart count from server
+            function loadCartCount() {
+                @auth
+                $.ajax({
+                    url: "{{ route('cart.count') }}",
+                    method: 'GET',
+                    success: function(response) {
+                        updateCartCountDisplay(response.count || 0);
+                    },
+                    error: function() {
+                        console.log('Failed to load cart count');
+                        updateCartCountDisplay(0);
+                    }
+                });
+                @else
+                    updateCartCountDisplay(0);
+                @endauth
+            }
+
+            // Load cart count when page loads
+            loadCartCount();
+
+            // Make the function available globally for other pages to use
+            window.updateCartCountDisplay = updateCartCountDisplay;
+            window.loadCartCount = loadCartCount;
+        });
+    </script>
 @yield('js')
 
 </body>
