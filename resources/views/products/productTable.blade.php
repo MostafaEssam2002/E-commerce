@@ -69,8 +69,8 @@
                     <a href="{{route('removeproduct',['productid'=>$item->id])}}" class="btn btn-danger">
                         <i class="fas fa-trash"></i> Delete product
                     </a>
-                    <a href="{{route('AddProductImages',['productid'=>$item->id])}}" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Add images
+                    <a href="{{route('AddProductImages',['productid'=>$item->id])}}" class="btn btn-primary">
+                        <i class="fas fa-image"></i> Add images
                     </a>
                 </td>
             </tr>

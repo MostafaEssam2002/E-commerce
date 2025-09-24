@@ -132,7 +132,8 @@
 						<nav class="main-menu">
 							<ul>
 								<li class="current-list-item"><a href="/">Home</a></li>
-								<li><a href="{{route("prods")}}">products</a></li>
+								{{-- <li><a href="{{route("products")}}">products</a></li> --}}
+								<li><a href="{{route("productstable")}}">products</a></li>
 								<li><a href="{{route("addproduct")}}">Add product</a></li>
 								<li><a href="{{route("cats")}}">category</a></li>
 								<li><a href="{{route("reviews")}}">Reviews</a></li>

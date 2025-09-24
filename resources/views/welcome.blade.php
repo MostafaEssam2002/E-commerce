@@ -16,7 +16,7 @@
                     <div class="col-lg-4 col-md-6 text-center">
                         <div class="single-product-item">
                             <div class="product-image">
-                                <a href="{{route("prods",["catid"=>$item->id])}}"><img  src="{{url($item->image_path)}}" alt=""></a>
+                                <a href="{{route("ShowProduct",["id"=>$item->id])}}"><img  src="{{url($item->image_path)}}" alt=""></a>
                             </div>
                             <h3>{{$item->name}}</h3>
                             <p class="product-price"><span>Per Kg</span></p>
@@ -65,10 +65,10 @@
 	</div>
 
 <!-- Success/Error Message Modal or Alert -->
-<div id="message-alert" class="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+{{-- <div id="message-alert" class="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
     <span id="message-text"></span>
     <button type="button" class="close" onclick="closeAlert()">&times;</button>
-</div>
+</div> --}}
 
 @endsection
 

@@ -22,7 +22,7 @@
                 <div class="col-lg-4 col-md-6 text-center">
 					<div class="single-product-item">
 						<div class="product-image">
-							<a href="single-product.html"><img src="{{url(asset($item->image_path))}}" alt=""></a>
+							<a href="{{route("ShowProduct",[$item->id])}}"><img src="{{url(asset($item->image_path))}}" alt=""></a>
 						</div>
 						<h3>{{$item->name}}</h3>
 						<p class="product-price"><span>{{$item->quantity}}</span> {{$item->price}}$ </p>
@@ -46,13 +46,46 @@
 			</div>
 		</div>
 	</div>
-
-<!-- Success/Error Message Modal or Alert -->
-<div id="message-alert" class="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-    <span id="message-text"></span>
-    <button type="button" class="close" onclick="closeAlert()">&times;</button>
-</div>
-
+<div class="row" style  = "margin-top: -100px;margin-bottom: 100px;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <div class="pagination-wrap">
+                            <ul>
+                                {{-- Prev --}}
+                                @if($products->onFirstPage())
+                                    <li><span>Prev</span></li>
+                                @else
+                                    <li><a href="{{ $products->previousPageUrl() }}">Prev</a></li>
+                                @endif
+                                {{-- Page Numbers --}}
+                                @foreach($products->getUrlRange(1, $products->lastPage()) as $page => $url)
+                                    @if($page == $products->currentPage())
+                                        <li><a class="active" href="{{ $url }}">{{ $page }}</a></li>
+                                    @else
+                                        <li><a href="{{ $url }}">{{ $page }}</a></li>
+                                    @endif
+                                @endforeach
+                                {{-- Next --}}
+                                @if($products->hasMorePages())
+                                    <li><a href="{{ $products->nextPageUrl() }}">Next</a></li>
+                                @else
+                                    <li><span>Next</span></li>
+                                @endif
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{{-- <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br> --}}
 @endsection
 
 @section('js')
@@ -229,6 +262,8 @@ function closeAlert() {
 </script>
 
 <style>
+    .pagination{
+}
 /* Alert Styles */
 .alert {
     padding: 15px;

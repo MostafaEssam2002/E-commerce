@@ -11,15 +11,15 @@ use function PHPUnit\Framework\isNumeric;
 
 class ProductController extends Controller
 {
-    function add($num){
-        return $num+1;
+    public function products(){
+        $products=Product::paginate(3);
+        return view("product",["products"=>$products]);
     }
     function productstable(){
         $products=Product::all();
         return view("products.productTable",["products"=>$products]);
     }
-
-        function addproduct(){
+    function addproduct(){
             if(Auth::check()){
                 $categories = categories::all();
             }
@@ -30,7 +30,6 @@ class ProductController extends Controller
     }
     function storeProduct (Request $request) {
     if ($request->id) {
-        // حالة التعديل
         $request->validate([
             'name' => 'required|max:10|unique:products,name,'.$request->id,
             'price' => 'required|integer',
@@ -39,19 +38,16 @@ class ProductController extends Controller
             'category_id' => 'required',
             'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
         $currentProduct = Product::find($request->id);
         if (!$currentProduct) {
             return redirect(route('prods'))->with('error', 'Product not found');
         }
-
         $currentProduct->name = $request->name;
         $currentProduct->price = $request->price;
         $currentProduct->quantity = $request->quantity;
         $currentProduct->shipping = $request->shipping;
         $currentProduct->description = $request->description;
         $currentProduct->category_id = $request->category_id;
-
         if ($request->hasFile('image_path')) {
             $image = $request->file('image_path');
             $imageName = Str::uuid()->toString().'_'.$image->getClientOriginalName();
@@ -59,10 +55,8 @@ class ProductController extends Controller
             $image->move($destination, $imageName);
             $currentProduct->image_path = 'assets/img/products/'.$imageName;
         }
-
         $currentProduct->save();
         return redirect("/editproduct/{$request->id}");
-
     } else {
         // حالة الإضافة
         $request->validate([
@@ -73,7 +67,6 @@ class ProductController extends Controller
             'category_id' => 'required',
             'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
         $newProduct = new Product();
         $newProduct->name = $request->name;
         $newProduct->price = $request->price;
@@ -81,7 +74,6 @@ class ProductController extends Controller
         $newProduct->shipping = $request->shipping;
         $newProduct->description = $request->description;
         $newProduct->category_id = $request->category_id;
-
         if ($request->hasFile('image_path')) {
             $image = $request->file('image_path');
             $imageName = Str::uuid()->toString().'_'.$image->getClientOriginalName();
@@ -89,7 +81,6 @@ class ProductController extends Controller
             $image->move($destinationPath, $imageName);
             $newProduct->image_path = 'assets/img/products/'.$imageName;
         }
-
         $newProduct->save();
         return redirect("/addproduct");
     }
@@ -150,14 +141,43 @@ class ProductController extends Controller
         if ($id>0){
             $product = Product::find($id);
             if($product){
-                $related_products =Product::where("category_id",$product->category_id)->get();
+                $related_products =Product::where("id","!=",$id)->where("category_id",$product->category_id)->inRandomOrder()->limit(3)->get();
                 return view("products.single_product",["product"=>$product,"related_products"=>$related_products]);
+                // $related_products =Product::where("id","!=",$id)->where("category_id",$product->category_id)->whereBetween("price",[$product->price-($product->price*.1),$product->price+($product->price*.1)])->inRandomOrder()->limit(3)->get();
             }else{
                 return redirect("/");
             }
         }
         else{
             return redirect("/");
+        }
+    }
+    public function add_product_image(Request $request,$product_id=null){
+        $request->validate([
+            "image_path"=>"required|image|mimes:jpeg,png,jpg,gif|max:2048"
+        ]);
+        $product_images = new productImages();
+        if($request->hasFile("image_path")){
+            $image=$request->file("image_path");
+            $image_name = Str::uuid()->toString().'_'.$image->getClientOriginalName();
+            $destination = public_path('assets/img/products');
+            $image->move($destination,$image_name);
+            $product_images->image_path = 'assets/img/products/'.$image_name;
+            $product_images->product_id = $product_id;
+            // dd(back());
+            $product_images->save();
+            return back();
+        }
+    }
+    public function removeproductimage($id){
+        if($id != null && isNumeric($id)){
+            $image = productImages::find($id);
+            if($image){
+                $image->delete();
+                return back();
+            }else{
+                return view("layout.404")->with(['error'=>'Error Image Cannot be Found',"code"=>"404"]);
+            }
         }
     }
 }

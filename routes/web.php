@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+Route::get("/test",[FirstController::class, 'test']);
 // Public Routes
 Route::get('/', [FirstController::class, 'MainPage']);
 Route::get("/category", [FirstController::class, 'GetAllCategoriesWithProducts'])->name("cats");
@@ -23,15 +24,16 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 // Protected Routes (Require Authentication)
 Route::middleware('auth')->group(function () {
-
     // Product Management Routes
+    Route::get("/products", [ProductController::class, 'products'])->name("products");
     Route::get("/addproduct", [ProductController::class, 'addproduct'])->name("addproduct");
     Route::get('/removeproduct/{productid}', [ProductController::class, 'removeProduct'])->name("removeproduct");
     Route::post('/storeproduct/{productid?}', [ProductController::class, 'storeProduct'])->name("storeproduct");
     Route::get('/editproduct/{productid}', [ProductController::class, 'editProduct'])->name("editproduct");
     Route::post('/editproduct/{productid}', [ProductController::class, 'storeProduct']);
     Route::get("/AddProductImages/{productid}", [ProductController::class, "AddProductImages"])->name("AddProductImages");
-
+    Route::get("/removeproductimage/{id}",[ProductController::class,"removeproductimage"])->name("removeproductimage");
+    Route::post("/add_product_image/{product_id}",[ProductController::class,"add_product_image"])->name("add_product_image");
     // Cart Routes
     Route::get("/cart", [CartController::class, 'cart'])->name("cart");
     Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
@@ -39,7 +41,6 @@ Route::middleware('auth')->group(function () {
     Route::post("/remove_from_cart", [CartController::class, 'remove_from_cart'])->name("remove_from_cart");
     Route::post("/change_quantity", [CartController::class, 'change_quantity'])->name("change_quantity");
     Route::post("/copon", [CartController::class, "copon"])->name("copon");
-
 });
 // use App\Http\Controllers\FirstController;
 // use App\Http\Controllers\ProductController;

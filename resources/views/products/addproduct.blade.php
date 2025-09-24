@@ -17,9 +17,6 @@
                     <form method="POST" enctype="multipart/form-data" action="/storeproduct" id="fruitkha-contact"  >
                         @csrf
                         <p>
-                            {{-- <span>
-                                {{$user->name}}
-                            </span> --}}
                         </p>
                         <p>
                             <input type="text" placeholder="Name" name="name" id="name" value="{{old("name")}}" style="width: 100%">

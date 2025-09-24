@@ -28,15 +28,10 @@
                                     <img style="max-height: 60px;min-height: 60px;min-width: 50px;max-width: 50px;width: 90%"
                                         src="{{asset($item->product->image_path)}}" alt="">
                                 </td>
-                                <td class="product-name">{{$item->product->name}}</td>
+                                <td class="product-name"><a href="/product/{{$item->product->id}}">{{$item->product->name}}</a></td>
                                 <td class="product-price">${{$item->product->price}}</td>
                                 <td class="product-quantity">
-                                    <input class="quantity-input"
-                                        type="number"
-                                        value="{{ $item->quantity }}"
-                                        min="1"
-                                        data-product-id="{{ $item->product_id }}"
-                                        data-product-price="{{ $item->product->price }}">
+                                    <input class="quantity-input" type="number" value="{{ $item->quantity }}" min="1" data-product-id="{{ $item->product_id }}" data-product-price="{{ $item->product->price }}">
                                     <div class="loading-spinner" style="display: none;">
                                         <i class="fas fa-spinner fa-spin"></i>
                                     </div>

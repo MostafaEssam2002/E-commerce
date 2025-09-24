@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\categories;
 use App\Models\Product;
+use App\Models\cart;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -68,4 +69,13 @@ class FirstController extends Controller
         $products = Product::with('category')->whereIn("category_id", $category->pluck('id'))->orderBy('created_at','desc')->get();
         return view("product", ["products" => $products,"catname"  => $category->pluck("name")]);
     }
+    public function test()
+{
+    // نجيب كل الـ carts ومعاها الـ product بتاع كل كارت
+    $products_in_cart = Cart::with('product')->where("user_id",Auth::user()->id)->get();
+
+    // نبعتهم للـ view
+    return view("test", compact('products_in_cart'));
+}
+
 }
