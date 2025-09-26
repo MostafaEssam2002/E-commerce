@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-lg-8 offset-lg-2 text-center">
             <div class="section-title">
-                <h3><span class="orange-text">ADD</span> Products</h3>
+                <h3><span class="orange-text">{{ trans('string.add') }}</span> {{ trans('string.products') }}</h3>
             </div>
         </div>
     </div>
@@ -19,7 +19,7 @@
                         <p>
                         </p>
                         <p>
-                            <input type="text" placeholder="Name" name="name" id="name" value="{{old("name")}}" style="width: 100%">
+                            <input type="text" placeholder= {{trans("string.name")}} name="name" id="name" value="{{old("name")}}" style="width: 100%">
                             <span class="text-danger">
                                 @error('name')
                                 {{$message}}
@@ -27,13 +27,13 @@
                             </span>
                         </p>
                         <p style="display: flex">
-                            <input type="number" style="width: 50% ;padding: 15px;border: 1px solid #ddd;border-radius: 3px;" value="{{old("price")}}" class="mr-4" placeholder="Price" name="price" id="price">
+                            <input type="number" style="width: 50% ;padding: 15px;border: 1px solid #ddd;border-radius: 3px;" value="{{old("price")}}" class="mr-4" placeholder={{trans("string.price")}} name="price" id="price">
                             <span class="text-danger">
                                 @error('price')
                                 {{$message}}
                                 @enderror
                             </span>
-                            <input type="number" style="width: 50% ;padding: 15px;border: 1px solid #ddd;border-radius: 3px;" value="{{old("price")}}" placeholder="Quantity" name="quantity" id="quantity">
+                            <input type="number" style="width: 50% ;padding: 15px;border: 1px solid #ddd;border-radius: 3px;" value="{{old("price")}}" placeholder={{trans("string.quantity")}} name="quantity" id="quantity">
                             <span class="text-danger">
                                 @error('quantity')
                                 {{$message}}
@@ -42,7 +42,7 @@
                             {{-- <input type="text" placeholder="Subject" name="subject" id="subject"> --}}
                         </p>
                         <p>
-                            <textarea name="description" id="description" cols="30" rows="10" placeholder="description">{{old("description")}}</textarea>
+                            <textarea name="description" id="description" cols="30" rows="10" placeholder={{trans("string.description")}}>{{old("description")}}</textarea>
                             <span class="text-danger">
                                 @error('description')
                                 {{$message}}
@@ -50,7 +50,7 @@
                             </span>
                         </p>
                         <p>
-                            <input type="number" placeholder="shipping" name="shipping" id="shipping" value="{{old("shipping")}}" style="width: 100%">
+                            <input type="number" placeholder={{ trans('string.shipping') }} name="shipping" id="shipping" value="{{old("shipping")}}" style="width: 100%">
                             <span class="text-danger">
                                 @error('shipping')
                                 {{$message}}
@@ -76,7 +76,7 @@
                             <input type="file" class="form-control" name="image_path" value="{{$item->image_path}}" id="">
                         </p>
                         {{-- <input type="hidden" name="token" value="FsWga4&amp;@f6aw"> --}}
-                        <p><input type="submit" value="Submit"></p>
+                        <p><input type="submit" value={{ trans('string.submit') }}></p>
                     </form>
                     {{-- @endif --}}
                 </div>

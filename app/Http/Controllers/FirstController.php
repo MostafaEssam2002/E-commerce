@@ -2,15 +2,24 @@
 namespace App\Http\Controllers;
 use App\Models\categories;
 use App\Models\Product;
-use App\Models\cart;
+use App\Models\Cart;
+use Illuminate\Support\Facades\session;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 class FirstController extends Controller
 {
+    public function change_lang(Request $request){
+        session()->put('locale',$request->locale);
+        return redirect()->back();
+    }
     function MainPage(){
+
         if(Auth::check()){
-            $result = Product::paginate(6);
+            // Cookie::queue('user_id', Auth::user()->id);
+            // cookies()->queue('user_id',Auth::user()->id, 45000);
+            $result = Product::paginate(9);
         }
         else{
             $result = Product::paginate(3);

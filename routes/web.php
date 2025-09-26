@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get("/test",[FirstController::class, 'test']);
 // Public Routes
-Route::get('/', [FirstController::class, 'MainPage']);
+Route::get('/', [FirstController::class, 'MainPage'])->middleware('customauth');
 Route::get("/category", [FirstController::class, 'GetAllCategoriesWithProducts'])->name("cats");
 Route::get("/category/{catid?}", [FirstController::class, "GetCategoryProduct"])->name("prods");
 Route::get("/reviews", [FirstController::class, 'reviews'])->name("reviews");
@@ -41,7 +41,12 @@ Route::middleware('auth')->group(function () {
     Route::post("/remove_from_cart", [CartController::class, 'remove_from_cart'])->name("remove_from_cart");
     Route::post("/change_quantity", [CartController::class, 'change_quantity'])->name("change_quantity");
     Route::post("/copon", [CartController::class, "copon"])->name("copon");
+    Route::get("/completeorder",[CartController::class,"completeorder"])->name("completeorder");
+    Route::post("/storeorder",[CartController::class,"storeorder"])->name("storeorder");
+    Route::get("/lastorders",[CartController::class,"lastorders"])->name("lastorders");
 });
+Route::post('/change_lang', [FirstController::class, 'change_lang'])->name('change_lang');
+// change_lang
 // use App\Http\Controllers\FirstController;
 // use App\Http\Controllers\ProductController;
 // use App\Http\Controllers\CartController;

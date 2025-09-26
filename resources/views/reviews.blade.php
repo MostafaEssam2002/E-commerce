@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-lg-8 offset-lg-2 text-center">
                 <div class="section-title">
-                    <h3><span class="orange-text">ADD</span> Review</h3>
+                    <h3><span class="orange-text">{{ trans('string.add') }}</span> {{ trans('string.Review') }}</h3>
                 </div>
             </div>
         </div>
@@ -16,7 +16,7 @@
                         <form method="POST" action="{{route("storereview")}}" id="fruitkha-contact">
                             @csrf()
                             <p>
-                                <input type="text" placeholder="Name" name="name" id="name"
+                                <input type="text" placeholder="{{trans("string.name")}}" name="name" id="name"
                                     value="{{ old('name') }}" style="width: 100%">
                                 <span class="text-danger">
                                     @error('name')
@@ -25,7 +25,7 @@
                                 </span>
                             </p>
                             <p>
-                                <input type="text" placeholder="Phone" name="phone" id="phone"
+                                <input type="text" placeholder="{{trans("string.phone")}}" name="phone" id="phone"
                                     value="{{ old('phone') }}" style="width: 100%">
                                 <span class="text-danger">
                                     @error('phone')
@@ -34,20 +34,20 @@
                                 </span>
                             </p>
                             <p style="display: flex">
-                                <input type="email" style="width: 50% ;padding: 15px;border: 1px solid #ddd;border-radius: 3px;" value="{{ old('email') }}" class="mr-4" placeholder="Email" name="email"id="email">
+                                <input type="email" style="width: 50% ;padding: 15px;border: 1px solid #ddd;border-radius: 3px;" value="{{ old('email') }}" class="mr-4" placeholder="{{trans("string.email")}}" name="email"id="email">
                                 <span class="text-danger">@error('email') {{ $message }} @enderror </span>
-                                <input type="text" style="width: 50% ;padding: 15px;border: 1px solid #ddd;border-radius: 3px;" value="{{ old('subject') }}" placeholder="Subject" name="subject" id="subject">
+                                <input type="text" style="width: 50% ;padding: 15px;border: 1px solid #ddd;border-radius: 3px;" value="{{ old('subject') }}" placeholder="{{trans("string.Subject")}}" name="subject" id="subject">
                                 <span class="text-danger">@error('subject'){{ $message }} @enderror </span>
                             </p>
                             <p>
-                                <textarea name="content" id="content" cols="30" rows="10" placeholder="content">{{ old('content') }}</textarea>
+                                <textarea name="content" id="content" cols="30" rows="10" placeholder="{{trans("string.content")}}">{{ old('content') }}</textarea>
                                 <span class="text-danger">
                                     @error('content')
                                         {{ $message }}
                                     @enderror
                                 </span>
                             </p>
-                            <p><input type="submit" value="Submit"></p>
+                            <p><input type="submit" value="{{trans("string.submit")}}"></p>
                         </form>
                     </div>
                 </div>
@@ -112,51 +112,4 @@
         </div>
     </div>
     <!-- end logo carousel -->
-
-    <!-- footer -->
-    <div class="footer-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="footer-box about-widget">
-                        <h2 class="widget-title">About us</h2>
-                        <p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                            doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="footer-box get-in-touch">
-                        <h2 class="widget-title">Get in Touch</h2>
-                        <ul>
-                            <li>34/8, East Hukupara, Gifirtok, Sadan.</li>
-                            <li>support@fruitkha.com</li>
-                            <li>+00 111 222 3333</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="footer-box pages">
-                        <h2 class="widget-title">Pages</h2>
-                        <ul>
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="about.html">About</a></li>
-                            <li><a href="services.html">Shop</a></li>
-                            <li><a href="news.html">News</a></li>
-                            <li><a href="contact.html">Contact</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="footer-box subscribe">
-                        <h2 class="widget-title">Subscribe</h2>
-                        <p>Subscribe to our mailing list to get the latest updates.</p>
-                        <form action="index.html">
-                            <input type="email" placeholder="Email">
-                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection

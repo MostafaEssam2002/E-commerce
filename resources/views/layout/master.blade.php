@@ -33,80 +33,8 @@
 	<!-- responsive -->
 	<link rel="stylesheet" href="{{asset('assets/css/responsive.css')}}">
 @yield('css')
-
 </head>
-<style>
-.cart-icon-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.cart-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #ff0000;
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 11px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    min-width: 18px;
-    padding: 2px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    border: 2px solid white;
-}
-
-/* إخفاء الشارة إذا كان العدد صفر */
-.cart-badge:empty,
-.cart-badge[data-count="0"] {
-    display: none;
-}
-
-/* تحسينات للأرقام الكبيرة */
-.cart-badge.large-number {
-    font-size: 10px;
-    min-width: 20px;
-    height: 20px;
-    top: -10px;
-    right: -10px;
-}
-
-/* تأثير الحركة عند التحديث */
-.cart-badge.updated {
-    animation: bounce 0.6s ease;
-}
-
-@keyframes bounce {
-    0%, 20%, 60%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    80% {
-        transform: translateY(-5px);
-    }
-}
-
-/* تحسينات للموبايل */
-@media (max-width: 768px) {
-    .cart-badge {
-        width: 16px;
-        height: 16px;
-        font-size: 10px;
-        top: -6px;
-        right: -6px;
-    }
-}
-</style>
 <body>
-
 	<!--PreLoader-->
     <div class="loader">
         <div class="loader-inner">
@@ -131,12 +59,11 @@
 						<!-- menu start -->
 						<nav class="main-menu">
 							<ul>
-								<li class="current-list-item"><a href="/">Home</a></li>
-								{{-- <li><a href="{{route("products")}}">products</a></li> --}}
-								<li><a href="{{route("productstable")}}">products</a></li>
-								<li><a href="{{route("addproduct")}}">Add product</a></li>
-								<li><a href="{{route("cats")}}">category</a></li>
-								<li><a href="{{route("reviews")}}">Reviews</a></li>
+								<li class="current-list-item"><a href="/">{{ trans('string.home') }}</a></li>
+								<li><a href="{{route("productstable")}}">{{ trans('string.products') }}</a></li>
+								<li><a href="{{route("addproduct")}}">{{ trans('string.Add product') }}</a></li>
+								<li><a href="{{route("cats")}}">{{ trans('string.category') }}</a></li>
+								<li><a href="{{route("reviews")}}">{{ trans('string.Reviews') }}</a></li>
                                 @guest
                                     @if (Route::has('login')) <li class="nav-item"><a href="{{ route('login') }}">{{ __('Login') }}</a></li> @endif
                                     @if (Route::has('register'))<li class="nav-item"><a href="{{ route('register') }}">{{ __('Register') }}</a></li>@endif @else
@@ -149,8 +76,32 @@
                                             </form>
                                         </ul>
                                     </li>
-                                @endguest
 
+
+<!-- Replace the existing language section in your navbar with this code -->
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle">
+        @if(session('locale') == 'ar')
+            عربي
+        @else
+            English
+        @endif
+    </a>
+    <ul class="sub-menu">
+        <li>
+            <a href="#" onclick="changeLanguage('en')" class="{{ session('locale') == 'en' ? 'active-lang' : '' }}">
+                English
+            </a>
+        </li>
+        <li>
+            <a href="#" onclick="changeLanguage('ar')" class="{{ session('locale') == 'ar' ? 'active-lang' : '' }}">
+                عربي
+            </a>
+        </li>
+    </ul>
+</li>
+
+                                @endguest
                                 <li>
                                     <div class="header-icons">
                                         <a class="shopping-cart" href="{{route("cart")}}">
@@ -225,7 +176,7 @@
 						<div class="hero-text">
 							<div class="hero-text-tablecell">
 								<p class="subtitle">Fresh Everyday</p>
-								<h1>100% Organic Collection</h1>
+								<h1>{{ trans('string.100% Organic Collection') }}</h1>
 								<div class="hero-btns">
 									<a href="shop.html" class="boxed-btn">Visit Shop</a>
 									<a href="contact.html" class="bordered-btn">Contact Us</a>
@@ -409,6 +360,13 @@
         });
     </script>
 @yield('js')
+
+<!-- Hidden form for language switching -->
+<form id="language-form" action="{{route('change_lang')}}" method="post" style="display: none;">
+    @csrf
+    <input type="hidden" name="locale" id="language-input">
+</form>
+<!-- Add this JavaScript -->
 
 </body>
 </html>

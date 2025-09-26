@@ -1,0 +1,68 @@
+.quantity-input {
+    width: 80px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    transition: all 0.15s ease-in-out;
+}
+
+.quantity-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 3px rgba(0,123,255,.25);
+}
+
+.loading-spinner {
+    margin-left: 10px;
+    color: #007bff;
+    font-size: 12px;
+}
+
+.updated {
+    background-color: #d4edda !important;
+    transition: background-color 0.3s ease;
+}
+
+.alert {
+    margin-bottom: 5px;
+    min-width: 250px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.remove-from-cart-btn {
+    color: #dc3545;
+    font-size: 18px;
+    transition: color 0.2s ease;
+}
+
+.remove-from-cart-btn:hover {
+    color: #c82333;
+    text-decoration: none;
+}
+
+.remove-from-cart-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.table-body-row {
+    transition: opacity 0.4s ease;
+}
+
+#empty-cart-message {
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}

@@ -46,31 +46,35 @@
     <table id="mytable" class="display">
         <thead>
             <tr>
-                <th style="text-align: center">ID</th>
-                <th style="text-align: center">Name</th>
-                <th style="text-align: center">Price</th>
-                <th style="text-align: center">Quantity</th>
-                <th style="text-align: center">Image</th>
-                <th style="text-align: center">Actions</th>
+                <th style="text-align: center">{{ trans('string.id') }}</th>
+                <th style="text-align: center">{{ trans('string.name') }}</th>
+                <th style="text-align: center">{{ trans('string.price') }}</th>
+                <th style="text-align: center">{{ trans('string.quantity') }}</th>
+                <th style="text-align: center">{{ trans('string.image') }}</th>
+                <th style="text-align: center">{{ trans('string.action') }}</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($products as $item)
             <tr>
                 <td>{{$item->id}}</td>
-                <td>{{$item->name}}</td>
-                <td>{{$item->price}}</td>
+                @if(session('locale')=="en")
+                    <td>{{$item->name}}</td>
+                @elseif(session('locale')=="ar")
+                    <td>{{$item->name_ar}}</td>
+                @endif
+                    <td>{{$item->price}}</td>
                 <td>{{$item->quantity}}</td>
                 <td><img style="min-width: 50px; max-width: 50px;" src="{{$item->image_path}}" alt="Error"></td>
                 <td style="text-align: center">
                     <a href="{{route('editproduct',['productid'=>$item->id])}}" class="btn btn-success">
-                        <i class="fas fa-pencil-alt"></i> Edit product
+                        <i class="fas fa-pencil-alt"></i> {{ trans('string.Edit product') }}
                     </a>
                     <a href="{{route('removeproduct',['productid'=>$item->id])}}" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Delete product
+                        <i class="fas fa-trash"></i> {{ trans('string.Delete product') }}
                     </a>
                     <a href="{{route('AddProductImages',['productid'=>$item->id])}}" class="btn btn-primary">
-                        <i class="fas fa-image"></i> Add images
+                        <i class="fas fa-image"></i> {{ trans('string.Add images') }}
                     </a>
                 </td>
             </tr>

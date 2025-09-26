@@ -9,9 +9,19 @@
                     <div class="product-filters">
                         <ul>
                             <li class="active" data-filter="*">All</li>
-                            @foreach ($categories as $category)
-                                <li data-filter="._{{$category->id}}">{{$category->name}}</li>
-                            @endforeach
+                            @if(session("locale") == "ar")
+                                {{-- <li data-filter="._0">الكل</li> --}}
+                                @foreach ($categories as $category)
+                                    <li data-filter="._{{$category->id}}">{{$category->name_AR}}</li>
+                                @endforeach
+                                {{-- @endforeach --}}
+                                @elseif(session("locale") == "en")
+                                @foreach ($categories as $category)
+                                    <li data-filter="._{{$category->id}}">{{$category->name}}</li>
+                                @endforeach
+                                {{-- <li data-filter="._0">All</li> --}}
+                            @endif
+
                         </ul>
                     </div>
                 </div>
@@ -24,13 +34,17 @@
 						<div class="product-image">
 							<a href="single-product.html"><img src="{{asset($product->image_path)}}" alt=""></a>
 						</div>
-						<h3>{{$product->name}}</h3>
-						<p class="product-price">{{$product->price}}$</p>
-                        <span>Quantity: {{$product->quantity}}</span>
+                        @if(session("locale") == "ar")
+    	    				<h3>{{$product->name_ar}}</h3>
+                        @elseif(session("locale") == "en")
+    	    				<h3>{{$product->name}}</h3>
+                        @endif
+                            <p class="product-price">{{$product->price}}$</p>
+                        <span>{{ trans('string.quantity') }}: {{$product->quantity}}</span>
                         <br><br>
                         <!-- Fixed: Changed $item->id to $product->id -->
                         <button class="cart-btn add-to-cart-btn" id="Add_to_Cart"   data-product-id="{{$product->id}}">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                            <i class="fas fa-shopping-cart"></i> {{ trans('string.Add to Cart') }}
                         </button>
 					</div>
 				</div>
@@ -40,11 +54,11 @@
 				<div class="col-lg-12 text-center">
 					<div class="pagination-wrap">
 						<ul>
-							<li><a href="#">Prev</a></li>
+							<li><a href="#">{{ trans('string.previous') }}</a></li>
 							<li><a href="#">1</a></li>
 							<li><a class="active" href="#">2</a></li>
 							<li><a href="#">3</a></li>
-							<li><a href="#">Next</a></li>
+							<li><a href="#">{{ trans('string.next') }}</a></li>
 						</ul>
 					</div>
 				</div>

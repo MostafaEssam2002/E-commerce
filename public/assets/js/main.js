@@ -331,3 +331,26 @@ $(document).ready(function() {
         });
     });
 });
+
+
+
+function changeLanguage(locale) {
+    document.getElementById('language-input').value = locale;
+    document.getElementById('language-form').submit();
+}
+
+// Mobile menu support
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle mobile dropdown
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdown = document.querySelector('.dropdown');
+
+    if (dropdownToggle && window.innerWidth <= 768) {
+        dropdownToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            dropdown.classList.toggle('mobile-open');
+        });
+    }
+});
+
+
