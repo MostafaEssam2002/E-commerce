@@ -75,7 +75,7 @@ class FirstController extends Controller
         if (!$category) {
             return view("layout.404")->with(['error' => 'Category not found',"code"  => "300"]);
         }
-        $products = Product::with('category')->whereIn("category_id", $category->pluck('id'))->orderBy('created_at','desc')->get();
+        $products = Product::with('category')->whereIn("category_id", $category->pluck('id'))->orderBy('created_at','desc')->paginate(3);
         return view("product", ["products" => $products,"catname"  => $category->pluck("name")]);
     }
     public function test()

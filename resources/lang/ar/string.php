@@ -63,4 +63,6 @@ return [
     "Subject" => "الموضوع",
     "phone" => "الهاتف",
     "content" => "المحتوى",
+    // "Remove Product" => "إزالة المنتج",
+    // "Edit Product" => "تعديل المنتج",
 ];

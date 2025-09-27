@@ -12,7 +12,7 @@ use function PHPUnit\Framework\isNumeric;
 class ProductController extends Controller
 {
     public function products(){
-        $products=Product::paginate(3);
+        $products=Product::paginate(6);
         return view("product",["products"=>$products]);
     }
     function productstable(){
@@ -42,7 +42,12 @@ class ProductController extends Controller
         if (!$currentProduct) {
             return redirect(route('prods'))->with('error', 'Product not found');
         }
-        $currentProduct->name = $request->name;
+        if(session('locale')=='en'){
+            $currentProduct->name = $request->name;
+        }
+        elseif(session('locale')=='ar'){
+            $currentProduct->name_AR = $request->name;
+        }
         $currentProduct->price = $request->price;
         $currentProduct->quantity = $request->quantity;
         $currentProduct->shipping = $request->shipping;
@@ -55,34 +60,40 @@ class ProductController extends Controller
             $image->move($destination, $imageName);
             $currentProduct->image_path = 'assets/img/products/'.$imageName;
         }
+
         $currentProduct->save();
-        return redirect("/editproduct/{$request->id}");
+        return redirect("/product/{$request->id}");
     } else {
-        // حالة الإضافة
         $request->validate([
-            'name' => 'required|max:10|unique:products',
-            'price' => 'required|integer',
-            'quantity' => 'required|integer',
-            'description' => 'required',
-            'category_id' => 'required',
-            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-        $newProduct = new Product();
+        'name' => 'required|max:50|unique:products,name',
+        'price' => 'required|integer',
+        'quantity' => 'required|integer',
+        'description' => 'required',
+        'category_id' => 'required',
+        'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+    $newProduct = new Product();
+    if (preg_match('/\p{Arabic}/u', $request->name)) {
+        $newProduct->name_ar = $request->name;
+        $newProduct->name = null;
+    } else {
         $newProduct->name = $request->name;
-        $newProduct->price = $request->price;
-        $newProduct->quantity = $request->quantity;
-        $newProduct->shipping = $request->shipping;
-        $newProduct->description = $request->description;
-        $newProduct->category_id = $request->category_id;
-        if ($request->hasFile('image_path')) {
-            $image = $request->file('image_path');
-            $imageName = Str::uuid()->toString().'_'.$image->getClientOriginalName();
-            $destinationPath = public_path('assets/img/products');
-            $image->move($destinationPath, $imageName);
-            $newProduct->image_path = 'assets/img/products/'.$imageName;
-        }
-        $newProduct->save();
-        return redirect("/addproduct");
+        $newProduct->name_ar = null;
+    }
+    $newProduct->price = $request->price;
+    $newProduct->quantity = $request->quantity;
+    $newProduct->shipping = $request->shipping ?? 0;
+    $newProduct->description = $request->description;
+    $newProduct->category_id = $request->category_id;
+    if ($request->hasFile('image_path')) {
+        $image = $request->file('image_path');
+        $imageName = Str::uuid()->toString().'_'.$image->getClientOriginalName();
+        $destinationPath = public_path('assets/img/products');
+        $image->move($destinationPath, $imageName);
+        $newProduct->image_path = 'assets/img/products/'.$imageName;
+    }
+    $newProduct->save();
+    return redirect("/addproduct");
     }
 }
 

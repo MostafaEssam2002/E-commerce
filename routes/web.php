@@ -22,10 +22,9 @@ Route::get("/productstable", [ProductController::class, 'productstable'])->name(
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::get("/products", [ProductController::class, 'products'])->name("products");
 // Protected Routes (Require Authentication)
-Route::middleware('auth')->group(function () {
-    // Product Management Routes
-    Route::get("/products", [ProductController::class, 'products'])->name("products");
+Route::middleware(['auth','check.role:seller,admin'])->group(function () {
     Route::get("/addproduct", [ProductController::class, 'addproduct'])->name("addproduct");
     Route::get('/removeproduct/{productid}', [ProductController::class, 'removeProduct'])->name("removeproduct");
     Route::post('/storeproduct/{productid?}', [ProductController::class, 'storeProduct'])->name("storeproduct");
@@ -34,6 +33,19 @@ Route::middleware('auth')->group(function () {
     Route::get("/AddProductImages/{productid}", [ProductController::class, "AddProductImages"])->name("AddProductImages");
     Route::get("/removeproductimage/{id}",[ProductController::class,"removeproductimage"])->name("removeproductimage");
     Route::post("/add_product_image/{product_id}",[ProductController::class,"add_product_image"])->name("add_product_image");
+});
+
+Route::middleware('auth')->group(function () {
+    // Product Management Routes
+    // Route::get("/products", [ProductController::class, 'products'])->name("products");
+    // Route::get("/addproduct", [ProductController::class, 'addproduct'])->name("addproduct");
+    // Route::get('/removeproduct/{productid}', [ProductController::class, 'removeProduct'])->name("removeproduct");
+    // Route::post('/storeproduct/{productid?}', [ProductController::class, 'storeProduct'])->name("storeproduct");
+    // Route::get('/editproduct/{productid}', [ProductController::class, 'editProduct'])->name("editproduct");
+    // Route::post('/editproduct/{productid}', [ProductController::class, 'storeProduct']);
+    // Route::get("/AddProductImages/{productid}", [ProductController::class, "AddProductImages"])->name("AddProductImages");
+    // Route::get("/removeproductimage/{id}",[ProductController::class,"removeproductimage"])->name("removeproductimage");
+    // Route::post("/add_product_image/{product_id}",[ProductController::class,"add_product_image"])->name("add_product_image");
     // Cart Routes
     Route::get("/cart", [CartController::class, 'cart'])->name("cart");
     Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');

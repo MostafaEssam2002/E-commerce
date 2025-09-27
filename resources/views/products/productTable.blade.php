@@ -1,8 +1,6 @@
 @extends('layout.master')
-
 @section('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-
 <style>
     /* Style زر Add Product */
     .btn-add-product {
@@ -18,23 +16,19 @@
         cursor: pointer;
         text-decoration: none;
     }
-
     .btn-add-product i {
         font-size: 16px;
     }
-
     .btn-add-product:hover {
         background-color: #0069d9;
         color: white;
     }
-
     /* Container لزر Add Product */
     .add-product-container {
         margin-bottom: 20px; /* مسافة أسفل الزر قبل الجدول */
     }
 </style>
 @endsection
-
 @section("content")
 <div class="container mt-5 mb-5">
     <div class="add-product-container">
@@ -42,7 +36,6 @@
             <i class="fas fa-plus"></i> Add product
         </a>
     </div>
-
     <table id="mytable" class="display">
         <thead>
             <tr>
@@ -58,12 +51,16 @@
             @foreach ($products as $item)
             <tr>
                 <td>{{$item->id}}</td>
-                @if(session('locale')=="en")
-                    <td>{{$item->name}}</td>
-                @elseif(session('locale')=="ar")
-                    <td>{{$item->name_ar}}</td>
-                @endif
-                    <td>{{$item->price}}</td>
+                <td>
+                    @if(session('locale')=="en")
+                        {{$item->name}}
+                    @elseif(session('locale')=="ar")
+                        {{$item->name_ar}}
+                    @else
+                        {{$item->name}}
+                    @endif
+                </td>
+                <td>{{$item->price}}</td>
                 <td>{{$item->quantity}}</td>
                 <td><img style="min-width: 50px; max-width: 50px;" src="{{$item->image_path}}" alt="Error"></td>
                 <td style="text-align: center">
@@ -83,12 +80,19 @@
     </table>
 </div>
 @endsection
-
 @section('js')
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#mytable').DataTable();
+        $('#mytable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/{{ session('locale') == 'ar' ? 'Arabic' : 'English' }}.json"
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": [4, 5] }, // disable sorting for image and action columns
+                { "searchable": false, "targets": [4, 5] }  // disable search for image and action columns
+            ]
+        });
     });
 </script>
 @endsection

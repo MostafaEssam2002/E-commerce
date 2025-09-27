@@ -24,21 +24,24 @@
 						<div class="product-image">
 							<a href="{{route("ShowProduct",[$item->id])}}"><img src="{{url(asset($item->image_path))}}" alt=""></a>
 						</div>
-						<h3>{{$item->name}}</h3>
+                        @if (session("locale") == 'ar')
+                            <h3>{{$item->name_ar}}</h3>
+                        @elseif (session("locale") == 'en')
+                            {{-- {{session("locale")}} --}}
+                            <h3>{{$item->name}}</h3>
+                        @endif
 						<p class="product-price"><span>{{$item->quantity}}</span> {{$item->price}}$ </p>
-
 						<!-- Updated Add to Cart Button with AJAX -->
 						<button class="cart-btn add-to-cart-btn" id="Add_to_Cart" data-product-id="{{$item->id}}">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                            <i class="fas fa-shopping-cart"></i> {{trans('string.Add to Cart')  }}
                         </button>
-
 						<a href="/removeproduct/{{$item->id}}" class="cart-btn" style="background-color: red">
-                            <i class="fas fa-shopping-cart"></i> Remove Product
+                            <i class="fas fa-shopping-cart"></i> {{trans("string.Delete product")}}
                         </a>
                         <br>
                         <br>
 						<a href="/editproduct/{{$item->id}}" class="cart-btn" style="background-color: blue">
-                            <i class="fas fa-shopping-cart"></i> Edit Product
+                            <i class="fas fa-shopping-cart"></i> {{trans('string.Edit product')}}
                         </a>
 					</div>
 				</div>

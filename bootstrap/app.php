@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'customauth' => CustomAuth::class,
             "set_lang" => set_lang::class,
+            'check.role' => \App\Http\Middleware\CheckRole::class,
         ]);
         $middleware->web([
         set_lang::class, // يخلي كل web routes يعدوا على middleware ده

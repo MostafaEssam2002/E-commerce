@@ -14,10 +14,8 @@
                 <div id="form_status"></div>
                 <div class="contact-form">
                     {{-- @if (auth()->check()) --}}
-                    <form method="POST" enctype="multipart/form-data" action="/storeproduct" id="fruitkha-contact"  >
+                    <form method="POST" enctype="multipart/form-data" action="{{route("storeproduct")}}" id="fruitkha-contact"  >
                         @csrf
-                        <p>
-                        </p>
                         <p>
                             <input type="text" placeholder= {{trans("string.name")}} name="name" id="name" value="{{old("name")}}" style="width: 100%">
                             <span class="text-danger">
@@ -62,7 +60,11 @@
                                 {{old("category_id")}}
                                 @foreach ($categories as $item)
                                     <option value="{{ $item->id }}" {{ old('category_id') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->name }}
+                                        @if (session("locale") == 'ar')
+                                            {{ $item->name_AR }}
+                                        @elseif(session("locale") == 'en')
+                                            {{ $item->name }}
+                                        @endif
                                     </option>
                                 @endforeach
                             </select>
