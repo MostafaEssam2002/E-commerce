@@ -15,6 +15,7 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
+        // dd($roles );
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'You must log in first.');
         }
@@ -22,7 +23,6 @@ class CheckRole
         if (!isset($user->role)) {
             abort(403, 'There are no specific permissions for this user.');
         }
-        // التحقق من أن المستخدم لديه إحدى الصلاحيات المطلوبة
         if (!in_array($user->role, $roles)) {
             abort(403, 'You do not have permission to access this page.');
         }

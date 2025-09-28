@@ -5,7 +5,7 @@ use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-Route::get("/test",[FirstController::class, 'test']);
+Route::get("/test",[FirstController::class, 'test'])->middleware("CheckRole:seller");
 // Public Routes
 Route::get('/', [FirstController::class, 'MainPage'])->middleware('customauth');
 Route::get("/category", [FirstController::class, 'GetAllCategoriesWithProducts'])->name("cats");
@@ -24,7 +24,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get("/products", [ProductController::class, 'products'])->name("products");
 // Protected Routes (Require Authentication)
-Route::middleware(['auth','check.role:seller,admin'])->group(function () {
+Route::middleware(['auth','CheckRole:seller,admin'])->group(function () {
     Route::get("/addproduct", [ProductController::class, 'addproduct'])->name("addproduct");
     Route::get('/removeproduct/{productid}', [ProductController::class, 'removeProduct'])->name("removeproduct");
     Route::post('/storeproduct/{productid?}', [ProductController::class, 'storeProduct'])->name("storeproduct");

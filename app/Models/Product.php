@@ -18,4 +18,10 @@ class Product extends Model
     public function orderDetails(){
         return $this->hasMany(OrderDetail::class);
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'sellerID');
+        // كل product تابع ليوزر واحد
+    }
+
 }

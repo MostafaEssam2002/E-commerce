@@ -3,7 +3,10 @@
     <link rel="stylesheet" href="{{asset('assets/css/welcome.css')}}">
 @endsection
 @section('content')
-{{-- {{session("locale")}} --}}
+{{-- <img class="mt-5" width="100" center src="data:image/svg+xml;base64,{{ base64_encode($qrcode) }}" alt="qrcode">
+<div class="mt-5 mr-5 ml-5" width="100">
+    <img src="data:image/png;base64,{{ $barcodePng }}" alt="barcode">
+</div> --}}
 <div class="product-section mt-150 mb-150">
 		<div class="container">
 			<div class="row">
@@ -22,14 +25,13 @@
                                 <a href="{{route("ShowProduct",["id"=>$item->id])}}"><img  src="{{url($item->image_path)}}" alt=""></a>
                             </div>
                             @if(session("locale")=="ar")
-                                {{-- <h3>ar</h3> --}}
                                 <h3>{{$item->name_ar}}</h3>
                             @elseif(session("locale")=="en")
-                                {{-- <h3>en</h3> --}}
+                                <h3>{{$item->name}}</h3>
+                            @else
                                 <h3>{{$item->name}}</h3>
                             @endif
                             <p class="product-price"><span>{{ $item->price }}</span></p>
-
                             <p class="product-price"><span>{{ trans('string.Per Kg') }}</span></p>
                             <!-- Updated Add to Cart Button with AJAX -->
                             <button class="cart-btn add-to-cart-btn" id="Add_to_Cart"   data-product-id="{{$item->id}}">
@@ -74,16 +76,7 @@
         </div>
 		</div>
 	</div>
-
-<!-- Success/Error Message Modal or Alert -->
-{{-- <div id="message-alert" class="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-    <span id="message-text"></span>
-    <button type="button" class="close" onclick="closeAlert()">&times;</button>
-</div> --}}
-
 @endsection
-
 @section('js')
 <script src="{{asset('assets/js/product-gallery.js')}}"></script>
-
 @endsection
