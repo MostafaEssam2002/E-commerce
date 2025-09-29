@@ -3,10 +3,6 @@
     <link rel="stylesheet" href="{{asset('assets/css/welcome.css')}}">
 @endsection
 @section('content')
-{{-- <img class="mt-5" width="100" center src="data:image/svg+xml;base64,{{ base64_encode($qrcode) }}" alt="qrcode">
-<div class="mt-5 mr-5 ml-5" width="100">
-    <img src="data:image/png;base64,{{ $barcodePng }}" alt="barcode">
-</div> --}}
 <div class="product-section mt-150 mb-150">
 		<div class="container">
 			<div class="row">
