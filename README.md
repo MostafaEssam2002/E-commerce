@@ -197,16 +197,6 @@ The website supports both Arabic and English languages:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-If you encounter any issues or have questions, please:
-- Create an issue in the repository
-- Contact the development team
-
 ## 🔄 Future Enhancements
 
 - **Payment gateway integration** (PayPal, Stripe, etc.)
@@ -216,7 +206,3 @@ If you encounter any issues or have questions, please:
 - Email notifications
 - Advanced reporting dashboard
 - Mobile app development
-
----
-
-**Built with ❤️ using Laravel Framework**
