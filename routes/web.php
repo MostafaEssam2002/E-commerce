@@ -2,10 +2,11 @@
 use App\Http\Controllers\FirstController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-Route::get("/test",[FirstController::class, 'test'])->middleware("CheckRole:seller");
+Route::get("/test",[TestController::class, 'test']);//->middleware("CheckRole:seller");
 // Public Routes
 Route::get('/', [FirstController::class, 'MainPage'])->middleware('customauth');
 Route::get("/category", [FirstController::class, 'GetAllCategoriesWithProducts'])->name("cats");
@@ -58,6 +59,7 @@ Route::middleware('auth')->group(function () {
     Route::get("/lastorders",[CartController::class,"lastorders"])->name("lastorders");
 });
 Route::post('/change_lang', [FirstController::class, 'change_lang'])->name('change_lang');
+// Route::get('/test');
 // change_lang
 // use App\Http\Controllers\FirstController;
 // use App\Http\Controllers\ProductController;
