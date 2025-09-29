@@ -12,7 +12,7 @@ use function PHPUnit\Framework\isNumeric;
 class ProductController extends Controller
 {
     public function products(){
-        $products=Product::paginate(6);
+        $products=Product::paginate(9);
         return view("product",["products"=>$products]);
     }
     function productstable(){
