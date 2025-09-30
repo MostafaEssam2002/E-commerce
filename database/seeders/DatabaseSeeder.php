@@ -58,6 +58,7 @@ class DatabaseSeeder extends Seeder
         categories::insert($categories);
         Product::insert($products);
         Review::insert($reviews);
+        $this->call(VisitsTableSeeder::class);
     }
 }
 // 12

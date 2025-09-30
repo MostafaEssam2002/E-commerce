@@ -45,6 +45,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Product::class, 'sellerID');
     }
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
 
 
 }

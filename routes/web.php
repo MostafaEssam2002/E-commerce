@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\FirstController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
@@ -36,6 +38,13 @@ Route::middleware(['auth','CheckRole:seller,admin'])->group(function () {
     Route::post("/add_product_image/{product_id}",[ProductController::class,"add_product_image"])->name("add_product_image");
 });
 
+Route::middleware(['auth','CheckRole:admin'])->group(function () {
+    Route::get("/admin/login",[AdminController::class,"login"])->name("admin_login_page");
+    Route::post("/api/admin/login_check",[AdminController::class,"login_check"])->name("admin_login_check");
+    Route::post('/login-check', [AdminController::class, 'login_check'])->name('admin_login_check');
+    Route::get('/adminpanal', [AdminController::class, 'adminpanal'])->name('adminpanal');
+
+});
 Route::middleware('auth')->group(function () {
     // Product Management Routes
     // Route::get("/products", [ProductController::class, 'products'])->name("products");
