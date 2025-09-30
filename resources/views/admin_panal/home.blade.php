@@ -1,7 +1,8 @@
 @extends('admin_panal.master')
-
+{{-- 16 --}}
 @section('content')
 <!-- Stats Cards -->
+{{-- {{$monthlyUsers}} --}}
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-icon primary">
@@ -136,6 +137,26 @@
 
 @section('scripts')
 <script>
+    const categories = @json($categories); // ['Electronics','Clothes','Food',...]
+
+    // دالة لتوليد لون HEX عشوائي
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    // توليد ألوان بنفس طول categories
+    const random_colors = [];
+    for (let i = 0; i < categories.length; i++) {
+        random_colors.push(getRandomColor());
+    }
+
+    // الآن random_colors.length === categories.length
+    console.log(random_colors);
     // Colors setup
     const colors = {
         primary: '#6366f1',
@@ -151,10 +172,11 @@
     const salesChart = new Chart(salesCtx, {
         type: 'line',
         data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September'],
+            // labels:  ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            labels:  ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September'],
             datasets: [{
                 label: 'Sales',
-                data: [12000, 19000, 15000, 25000, 22000, 30000, 28000, 35000, 32000],
+                data: @json(array_values($total_sales)),
                 borderColor: colors.primary,
                 backgroundColor: 'rgba(99, 102, 241, 0.1)',
                 tension: 0.4,
@@ -164,9 +186,10 @@
                 pointBackgroundColor: colors.primary,
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2
+                //SELECT SUM(order_details.quantity) , month(created_at) FROM order_details GROUP BY month(order_details.created_at);
             }, {
                 label: 'Profit',
-                data: [8000, 14000, 11000, 18000, 16000, 22000, 20000, 26000, 24000],
+                data: @json(array_values($total_profit)),
                 borderColor: colors.success,
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 tension: 0.4,
@@ -231,22 +254,16 @@
             }
         }
     });
-
     // Revenue Chart - Doughnut
     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
     const revenueChart = new Chart(revenueCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Electronics', 'Clothing', 'Food', 'Books', 'Other'],
+            // labels: ['Electronics', 'Clothing', 'Food', 'Books', 'Other'],
+            labels: categories,
             datasets: [{
-                data: [35, 25, 20, 12, 8],
-                backgroundColor: [
-                    colors.primary,
-                    colors.success,
-                    colors.warning,
-                    colors.info,
-                    colors.secondary
-                ],
+                data: @json($categories_sold),
+                backgroundColor: random_colors,
                 borderWidth: 0,
                 hoverOffset: 10
             }]
@@ -285,10 +302,11 @@
     const userGrowthChart = new Chart(userGrowthCtx, {
         type: 'bar',
         data: {
-            labels: ['March', 'April', 'May', 'June', 'July', 'August'],
+            // labels: ['March', 'April', 'May', 'June', 'July', 'August',],
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             datasets: [{
                 label: 'New Users',
-                data: [420, 580, 650, 720, 890, 950],
+                data: @json($monthlyUsers),
                 backgroundColor: (context) => {
                     const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
                     gradient.addColorStop(0, colors.primary);

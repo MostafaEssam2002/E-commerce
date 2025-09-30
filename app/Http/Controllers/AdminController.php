@@ -1,8 +1,11 @@
 <?php
 namespace App\Http\Controllers;
+
+use App\Models\categories;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\categories_sales;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -83,6 +86,31 @@ class AdminController extends Controller
         $total_visits_last_month = DB::table("visits")->whereMonth('visited_at',date('m')-1)->whereYear('visited_at',date('Y'))->count('id');
         $Conversion_Rate  = ($total_orders_this_month/$total_visits_this_month)*100 ;
         $Conversion_Rate_last_month  = ($total_orders_last_month/$total_visits_last_month)*100 ;
+        $profit_per_month = DB::table('order_details')
+            ->selectRaw('MONTH(created_at) as month, SUM(price) as total_price')
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy(DB::raw('MONTH(created_at)'))
+            ->get();
+            $monthlyProfits = array_fill(1, 12, 0);
+            foreach ($profit_per_month as $row) {
+                $monthlyProfits[$row->month] = $row->total_price;
+            }
+        $results = DB::table('order_totals_view')
+        ->select(
+            DB::raw('SUM(total_price) AS total_profit'),
+            DB::raw('SUM(total_order) AS total_sales'),
+            DB::raw('MONTH(created_at) as month')
+        )
+        ->groupBy(DB::raw('MONTH(created_at)'))
+        ->get();
+        $categories=categories_sales::pluck('category_name');
+        $categories_sold=categories_sales::pluck('total_orders');
+        $monthlyUsers = DB::table('users')
+            ->select(DB::raw('MONTH(created_at) as month'), DB::raw('COUNT(*) as total_users'))
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy(DB::raw('MONTH(created_at)'), 'asc')
+            ->get();
+            // dd($monthlyUsers->pluck('total_users'));
         return view("admin_panal.home", [
             "result"=> $total_users_orders,
             "total_revenue"=> $total_revenue_this_month,
@@ -93,6 +121,11 @@ class AdminController extends Controller
             "order_percentage"=> $total_orders_last_month > 0 ? (($total_orders_this_month - $total_orders_last_month) / $total_orders_last_month) * 100 : 0,
             "Conversion_Rate"=>$Conversion_Rate,
             "Conversion_Rate_percentage"=> $Conversion_Rate_last_month > 0 ? (($Conversion_Rate - $Conversion_Rate_last_month) / $Conversion_Rate_last_month) * 100 : 0,
+            "total_profit"=> $results->pluck('total_profit')->map(fn($val) => $val ?? 0)->toArray(),
+            "total_sales"=> $results->pluck('total_sales')->map(fn($val) => $val ?? 0)->toArray(),
+            "categories"=>$categories,
+            "categories_sold"=>$categories_sold,
+            "monthlyUsers"=>$monthlyUsers->pluck('total_users'),
         ]);
     }
 }
