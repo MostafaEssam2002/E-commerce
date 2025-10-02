@@ -22,15 +22,15 @@
                 <h3><i class="mdi mdi-view-dashboard"></i> Dashboard</h3>
             </div>
             <div class="sidebar-menu">
-                <a href="/" class="menu-item active">
+                <a href="{{route("adminpanal")}}" class="menu-item active">
                     <i class="mdi mdi-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="{{route('analytics')}}" class="menu-item">
                     <i class="mdi mdi-chart-line"></i>
                     <span>Analytics</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="{{route("users")}}" class="menu-item">
                     <i class="mdi mdi-account-multiple"></i>
                     <span>Users</span>
                 </a>

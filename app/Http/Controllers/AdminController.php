@@ -50,8 +50,7 @@ class AdminController extends Controller
 
                 return response()->json([
                     'status' => 'success',
-                    // redirect_url
-                    'redirect_url' => url('/adminpanal'),
+                    'redirect_url' => url('/admin/adminpanal'),
                     'message' => 'login successfully'
                 ], 200);
             }
@@ -75,6 +74,7 @@ class AdminController extends Controller
             ->get();
         $total_revenue_this_month = DB::table('order_details')->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->sum('price');
         $total_revenue_prev_month = DB::table('order_details')->whereMonth('created_at', date('m')-1)->whereYear('created_at', date('Y'))->sum('price');
+        // dd($total_revenue_this_month,$total_revenue_prev_month);
         $total_users = DB::table("users")->count('id');
         $total_users_this_month = DB::table("users")->whereMonth('created_at',date('m'))->whereYear('created_at',date('Y'))->count('id');
         $total_users_last_month = DB::table("users")->whereMonth('created_at',date('m')-1)->whereYear('created_at',date('Y'))->count('id');
@@ -84,8 +84,11 @@ class AdminController extends Controller
         // $total_visits = DB::table("visits")->count('id');
         $total_visits_this_month = DB::table("visits")->whereMonth('visited_at',date('m'))->whereYear('visited_at',date('Y'))->count('id');
         $total_visits_last_month = DB::table("visits")->whereMonth('visited_at',date('m')-1)->whereYear('visited_at',date('Y'))->count('id');
-        $Conversion_Rate  = ($total_orders_this_month/$total_visits_this_month)*100 ;
-        $Conversion_Rate_last_month  = ($total_orders_last_month/$total_visits_last_month)*100 ;
+        $Conversion_Rate = $total_visits_this_month > 0 ? ($total_orders_this_month / $total_visits_this_month) * 100 : 0;
+        $Conversion_Rate_last_month = $total_visits_last_month > 0 ? ($total_orders_last_month / $total_visits_last_month) * 100 : 0;
+
+        // $Conversion_Rate  = ($total_orders_this_month/$total_visits_this_month)*100 ;
+        // $Conversion_Rate_last_month  = ($total_orders_last_month/$total_visits_last_month)*100 ;
         $profit_per_month = DB::table('order_details')
             ->selectRaw('MONTH(created_at) as month, SUM(price) as total_price')
             ->groupBy(DB::raw('MONTH(created_at)'))
@@ -110,7 +113,6 @@ class AdminController extends Controller
             ->groupBy(DB::raw('MONTH(created_at)'))
             ->orderBy(DB::raw('MONTH(created_at)'), 'asc')
             ->get();
-            // dd($monthlyUsers->pluck('total_users'));
         return view("admin_panal.home", [
             "result"=> $total_users_orders,
             "total_revenue"=> $total_revenue_this_month,
@@ -128,4 +130,43 @@ class AdminController extends Controller
             "monthlyUsers"=>$monthlyUsers->pluck('total_users'),
         ]);
     }
+    public function users_table(){
+        $users = User::all();
+        return view('admin_panal.users', compact('users'));
+    }
+    public function show_users(){
+        $users=User::all();
+        return response()->json($users);
+        // return view("admin_panal.users");
+    }
+    public function update_user(Request $request, $id){
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,'.$id,
+    ]);
+
+    $user = User::findOrFail($id);
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'User updated successfully',
+        'user' => $user
+    ]);
+}
+public function analytics(){
+    return view("admin_panal.analytics");
+}
+// Delete user
+public function delete_user($id){
+    $user = User::findOrFail($id);
+    $user->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'User deleted successfully'
+    ]);
+}
 }

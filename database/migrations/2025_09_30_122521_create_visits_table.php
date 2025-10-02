@@ -9,7 +9,8 @@ return new class extends Migration
         Schema::create('visits', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->timestamp('visited_at')->nullable();
+            // $table->timestamp('visited_at')->nullable();
+            $table->dateTime('visited_at');
             // $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

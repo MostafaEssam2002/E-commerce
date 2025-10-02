@@ -5,6 +5,9 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,12 +20,12 @@ class DatabaseSeeder extends Seeder
         ["name" => 'makeup', "name_ar" => 'مكياج', "description" => " ", "image_path" => 'assets/img/products/makeup.jpg'],
         ["name" => 'cameras', "name_ar" => 'كاميرات', "description" => " ", "image_path" => 'assets/img/products/cameras.jpg'],
         ["name" => 'food', "name_ar" => 'طعام', "description" => " ", "image_path" => 'assets/img/products/food.jpg'],
-        ["name" => 'furniture', "name_ar" => 'أثاث', "description" => " ", "image_path" => 'assets/img/products/furniture.jpg'],  // فئة جديدة
-        ["name" => 'clothing', "name_ar" => 'ملابس', "description" => " ", "image_path" => 'assets/img/products/clothing.jpg'],  // فئة جديدة
-        ["name" => 'shoes', "name_ar" => 'أحذية', "description" => " ", "image_path" => 'assets/img/products/shoes.jpg'],  // فئة جديدة
-        ["name" => 'sports', "name_ar" => 'رياضة', "description" => " ", "image_path" => 'assets/img/products/sports.jpg'],  // فئة جديدة
-        ["name" => 'toys', "name_ar" => 'ألعاب', "description" => " ", "image_path" => 'assets/img/products/toys.jpg'],  // فئة جديدة
-        ["name" => 'health', "name_ar" => 'صحة', "description" => " ", "image_path" => 'assets/img/products/health.jpg']   // فئة جديدة
+        ["name" => 'furniture', "name_ar" => 'أثاث', "description" => " ", "image_path" => 'assets/img/products/furniture.jpg'],
+        ["name" => 'clothing', "name_ar" => 'ملابس', "description" => " ", "image_path" => 'assets/img/products/clothing.jpg'],
+        ["name" => 'shoes', "name_ar" => 'أحذية', "description" => " ", "image_path" => 'assets/img/products/shoes.jpg'],
+        ["name" => 'sports', "name_ar" => 'رياضة', "description" => " ", "image_path" => 'assets/img/products/sports.jpg'],
+        ["name" => 'toys', "name_ar" => 'ألعاب', "description" => " ", "image_path" => 'assets/img/products/toys.jpg'],
+        ["name" => 'health', "name_ar" => 'صحة', "description" => " ", "image_path" => 'assets/img/products/health.jpg']
     ];
 
         $products = [
@@ -43,6 +46,7 @@ class DatabaseSeeder extends Seeder
             ["id"=>2,"name"=>"Saira Hakim","email"=>"SairaHakim@gmail.com","phone"=>"01148090115","subject"=>"Local shop owner","message"=>"Sed ut perspiciatis unde omnis iste natus error veritatis et  quasi architecto beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium","image_path"=>"assets/img/avaters/avatar2.png"],
             ["id"=>3,"name"=>"Jacob Sikim","email"=>"JacobSikim@gmail.com","phone"=>"01148090115","subject"=>"Local shop owner","message"=>"Sed ut perspiciatis unde omnis iste natus error veritatis et  quasi architecto beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium","image_path"=>"assets/img/avaters/avatar3.png"],
         ];
+
         $users = [
             ["id"=>1,"name"=>"admin","email"=>"admin@gmail.com","avatar"=>"assets/img/users/d7b7bc28-0734-4d2a-9e6a-f4ffbf8c06db.jpg","email_verified_at"=>null,"password"=>"$2y$12$49S7qGyno0i2sNyyoPSZ/ODzp4RkMSOshdKqzEq1VBBu4pnhZFqJe","remember_token"=>"9166ozUCyuCTQ6sxOEi6HofZO6jar1ge8bvUh7VRFNg2xM44Rkaoz8NABHOw","created_at"=>"2025-09-24 02:49:00","updated_at"=>"2025-09-24 02:49:00","role"=>"admin"],
             ["id"=>2,"name"=>"ahmed","email"=>"ahmed@gmail.com","avatar"=>"assets/img/users/d7b7bc28-0734-4d2a-9e6a-f4ffbf8c06db.jpg","email_verified_at"=>null,"password"=>'$2y$12$dxo26kbUX269QzMpwl4FBOdtx0Q.OKU96Q4kQ45t0.zR8.ysEuzf6',"remember_token"=>"hTUvV0twguWfZyJx4JwaxF8KrSQ2WTMPbZBVj76tGaE2tLvOfuvkSfnDS1bJ","created_at"=>"2025-09-24 04:06:15","updated_at"=>"2025-09-24 04:06:15","role"=>"user"],
@@ -53,11 +57,84 @@ class DatabaseSeeder extends Seeder
             ["id"=>10,"name"=>"tester","email"=>"tester@gmail.com","avatar"=>"assets/img/users/d7b7bc28-0734-4d2a-9e6a-f4ffbf8c06db.jpg","email_verified_at"=>null,"password"=>'$2y$12$nv12rBqxKXY4qHZJXo4EwObZFOOyEfVO2onlrnXQvIcwuUyOBydka',"remember_token"=>null,"created_at"=>"2025-09-27 01:07:40","updated_at"=>"2025-09-27 01:07:40","role"=>"user"],
             ["id"=>11,"name"=>"mostafa essam","email"=>"mo@gmail.com","avatar"=>"assets/img/users/d7b7bc28-0734-4d2a-9e6a-f4ffbf8c06db.jpg","email_verified_at"=>null,"password"=>'$2y$12$i6tVt7aK959vOUDjoTC5z.0GoweuOHelEQ4YNdDd6aRXunDVfQJTC',"remember_token"=>null,"created_at"=>"2025-09-27 02:27:56","updated_at"=>"2025-09-27 02:27:56","role"=>"user"],
         ];
-        User::insert($users);
 
+        // إدخال البيانات الأساسية
         categories::insert($categories);
+        User::insert($users);
         Product::insert($products);
         Review::insert($reviews);
+
+        // ===================== إضافة 100 مستخدم إضافي =====================
+        $totalNewUsers = 100;
+        $startDate = Carbon::create(2025, 1, 1, 0, 0, 0);
+        $endDate   = Carbon::create(2025, 12, 31, 23, 59, 59);
+        $password = Hash::make('password123');
+
+        $newUsersData = [];
+        for ($i = 1; $i <= $totalNewUsers; $i++) {
+            $randomDate = Carbon::createFromTimestamp(
+                rand($startDate->timestamp, $endDate->timestamp)
+            );
+
+            $newUsersData[] = [
+                'name'              => 'User ' . $i,
+                'email'             => 'user' . $i . '@example.com',
+                'avatar'            => 'assets/img/users/d7b7bc28-0734-4d2a-9e6a-f4ffbf8c06db.jpg',
+                'email_verified_at' => null,
+                'password'          => $password,
+                'remember_token'    => null,
+                'created_at'        => $randomDate,
+                'updated_at'        => $randomDate,
+                'role'              => 'user',
+            ];
+        }
+
+        // إدخال المستخدمين الجدد على دفعات
+        $chunks = array_chunk($newUsersData, 50);
+        foreach ($chunks as $chunk) {
+            DB::table('users')->insert($chunk);
+        }
+
+        // ===================== إضافة 100 طلب (Orders) =====================
+        $userIds = User::pluck('id')->toArray();
+        $products = Product::all();
+        $totalOrders = 100;
+
+        for ($i = 0; $i < $totalOrders; $i++) {
+            $randomDate = Carbon::createFromTimestamp(
+                rand($startDate->timestamp, $endDate->timestamp)
+            );
+
+            // إنشاء الطلب
+            $orderId = DB::table('orders')->insertGetId([
+                'name'       => 'Customer ' . ($i + 1),
+                'email'      => 'customer' . ($i + 1) . '@example.com',
+                'address'    => 'Random Address ' . rand(1, 100),
+                'phone'      => '0100' . rand(1000000, 9999999),
+                'note'       => 'Test order ' . ($i + 1),
+                'user_id'    => $userIds[array_rand($userIds)],
+                'created_at' => $randomDate,
+                'updated_at' => $randomDate,
+            ]);
+
+            // إضافة منتجات للطلب
+            $numProducts = rand(1, min(5, $products->count()));
+            $selectedProducts = $products->random($numProducts);
+
+            foreach ($selectedProducts as $product) {
+                $quantity = rand(1, 3);
+                DB::table('order_details')->insert([
+                    'order_id'   => $orderId,
+                    'product_id' => $product->id,
+                    'quantity'   => $quantity,
+                    'price'      => $product->price * $quantity,
+                    'created_at' => $randomDate,
+                    'updated_at' => $randomDate,
+                ]);
+            }
+        }
+
+        // استدعاء VisitsTableSeeder
         $this->call(VisitsTableSeeder::class);
     }
 }

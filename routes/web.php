@@ -42,8 +42,12 @@ Route::middleware(['auth','CheckRole:admin'])->group(function () {
     Route::get("/admin/login",[AdminController::class,"login"])->name("admin_login_page");
     Route::post("/api/admin/login_check",[AdminController::class,"login_check"])->name("admin_login_check");
     Route::post('/login-check', [AdminController::class, 'login_check'])->name('admin_login_check');
-    Route::get('/adminpanal', [AdminController::class, 'adminpanal'])->name('adminpanal');
-
+    Route::get('/admin/adminpanal', [AdminController::class, 'adminpanal'])->name('adminpanal');
+    Route::get('/admin/analytics', [AdminController::class, 'analytics'])->name('analytics');
+    Route::get('/admin/users', [AdminController::class, 'users_table'])->name('users');
+    Route::get('/api/users', [AdminController::class, 'show_users']);
+    Route::put('/api/users/{id}', [AdminController::class, 'update_user']);
+    Route::delete('/api/users/{id}', [AdminController::class, 'delete_user']);
 });
 Route::middleware('auth')->group(function () {
     // Product Management Routes
