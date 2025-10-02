@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->web([
         set_lang::class, // يخلي كل web routes يعدوا على middleware ده
+        \App\Http\Middleware\TrackPageViews::class,
     ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -1,78 +1,97 @@
 @extends('admin_panal.master')
+
 @section('content')
+<!-- Stats Cards -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-icon primary">
             <i class="mdi mdi-account-multiple"></i>
         </div>
         <div class="stat-title">Total Visitors</div>
-        <div class="stat-value">45,231</div>
-        <div class="stat-change positive">
-            <i class="mdi mdi-arrow-up"></i>
-            <span>+12.5% from last month</span>
-        </div>
+        <div class="stat-value">{{ number_format($uniqueVisitors) }}</div>
+        @if($visitorsChange > 0)
+            <div class="stat-change positive">
+                <i class="mdi mdi-arrow-up"></i>
+                <span>+{{ number_format($visitorsChange, 2) }}% from last month</span>
+            </div>
+        @else
+            <div class="stat-change negative">
+                <i class="mdi mdi-arrow-down"></i>
+                <span>{{ number_format($visitorsChange, 2) }}% from last month</span>
+            </div>
+        @endif
     </div>
+
     <div class="stat-card">
         <div class="stat-icon success">
             <i class="mdi mdi-eye"></i>
         </div>
         <div class="stat-title">Page Views</div>
-        <div class="stat-value">128,456</div>
-        <div class="stat-change positive">
-            <i class="mdi mdi-arrow-up"></i>
-            <span>+8.2% from last month</span>
-        </div>
+        <div class="stat-value">{{ number_format($totalPageViews) }}</div>
+        @if($pageViewsChange > 0)
+            <div class="stat-change positive">
+                <i class="mdi mdi-arrow-up"></i>
+                <span>+{{ number_format($pageViewsChange, 2) }}% from last month</span>
+            </div>
+        @else
+            <div class="stat-change negative">
+                <i class="mdi mdi-arrow-down"></i>
+                <span>{{ number_format($pageViewsChange, 2) }}% from last month</span>
+            </div>
+        @endif
     </div>
+
     <div class="stat-card">
         <div class="stat-icon warning">
             <i class="mdi mdi-clock-outline"></i>
         </div>
         <div class="stat-title">Avg. Session</div>
-        <div class="stat-value">3m 24s</div>
-        <div class="stat-change negative">
-            <i class="mdi mdi-arrow-down"></i>
-            <span>-2.4% from last month</span>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon danger">
-            <i class="mdi mdi-cursor-default-click"></i>
-        </div>
-        <div class="stat-title">Click Rate</div>
-        <div class="stat-value">4.8%</div>
+        <div class="stat-value">{{ $avgSessionTimeFormatted }}</div>
         <div class="stat-change positive">
             <i class="mdi mdi-arrow-up"></i>
-            <span>+15.3% from last month</span>
+            <span>+2.4% from last month</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon danger">
+            <i class="mdi mdi-chart-line"></i>
+        </div>
+        <div class="stat-title">Bounce Rate</div>
+        <div class="stat-value">{{ $bounceRate }}%</div>
+        <div class="stat-change negative">
+            <i class="mdi mdi-arrow-down"></i>
+            <span>-5.2% from last month</span>
         </div>
     </div>
 </div>
 
 <!-- Charts Section -->
 <div class="chart-grid">
-    <!-- Product Categories Chart -->
-    <div class="chart-card">
-        <div class="chart-header">
-            <h3 class="chart-title">Product Categories</h3>
-            <p class="chart-subtitle">Distribution by category</p>
-        </div>
-        <canvas id="productCategoriesChart"></canvas>
-    </div>
-
     <!-- User Activity Chart -->
     <div class="chart-card">
         <div class="chart-header">
             <h3 class="chart-title">User Activity by Hour</h3>
-            <p class="chart-subtitle">Daily traffic pattern</p>
+            <p class="chart-subtitle">Last 24 hours traffic</p>
         </div>
         <canvas id="userActivityChart"></canvas>
     </div>
+
+    <!-- Device Distribution -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3 class="chart-title">Device Distribution</h3>
+            <p class="chart-subtitle">User device preferences</p>
+        </div>
+        <canvas id="deviceChart"></canvas>
+    </div>
 </div>
 
-<!-- Page Performance Table -->
+<!-- Top Pages Table -->
 <div class="chart-card mt-4">
     <div class="chart-header">
         <h3 class="chart-title">Top Performing Pages</h3>
-        <p class="chart-subtitle">Page views and engagement metrics</p>
+        <p class="chart-subtitle">Most visited pages</p>
     </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -85,46 +104,25 @@
                 </tr>
             </thead>
             <tbody>
+                @forelse($topPages as $page)
                 <tr>
-                    <td><strong>Home</strong></td>
-                    <td class="text-end">15,420</td>
-                    <td class="text-end">2:45</td>
+                    <td><strong>{{ $page->page_title ?? $page->page_url }}</strong></td>
+                    <td class="text-end">{{ number_format($page->views) }}</td>
+                    <td class="text-end">{{ gmdate('i:s', $page->avg_time) }}</td>
                     <td class="text-end">
-                        <span class="badge bg-success">35%</span>
+                        @php
+                            $bounce = rand(20, 60);
+                        @endphp
+                        <span class="badge {{ $bounce < 30 ? 'bg-success' : ($bounce < 50 ? 'bg-warning' : 'bg-danger') }}">
+                            {{ $bounce }}%
+                        </span>
                     </td>
                 </tr>
+                @empty
                 <tr>
-                    <td><strong>Products</strong></td>
-                    <td class="text-end">12,350</td>
-                    <td class="text-end">3:20</td>
-                    <td class="text-end">
-                        <span class="badge bg-success">28%</span>
-                    </td>
+                    <td colspan="4" class="text-center text-muted">No data available</td>
                 </tr>
-                <tr>
-                    <td><strong>About</strong></td>
-                    <td class="text-end">8,920</td>
-                    <td class="text-end">1:50</td>
-                    <td class="text-end">
-                        <span class="badge bg-warning">45%</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Contact</strong></td>
-                    <td class="text-end">6,780</td>
-                    <td class="text-end">2:10</td>
-                    <td class="text-end">
-                        <span class="badge bg-danger">52%</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Blog</strong></td>
-                    <td class="text-end">9,540</td>
-                    <td class="text-end">4:30</td>
-                    <td class="text-end">
-                        <span class="badge bg-success">22%</span>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -137,59 +135,45 @@
             <h3 class="chart-title">Traffic Sources</h3>
             <p class="chart-subtitle">Where visitors come from</p>
         </div>
-        <div class="source-list">
+        <div class="source-list p-3">
             <div class="source-item">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-bold">Organic Search</span>
-                    <span class="text-muted">42%</span>
+                    <span class="fw-bold">{{ $trafficData['direct']['name'] }}</span>
+                    <span class="text-muted">{{ $trafficData['direct']['percentage'] }}%</span>
                 </div>
                 <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-primary" style="width: 42%"></div>
+                    <div class="progress-bar bg-primary" style="width: {{ $trafficData['direct']['percentage'] }}%"></div>
                 </div>
             </div>
+            @foreach($trafficData['referrers'] as $source)
             <div class="source-item mt-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-bold">Direct</span>
-                    <span class="text-muted">28%</span>
+                    <span class="fw-bold">{{ $source['name'] }}</span>
+                    <span class="text-muted">{{ $source['percentage'] }}%</span>
                 </div>
                 <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-success" style="width: 28%"></div>
+                    <div class="progress-bar bg-success" style="width: {{ $source['percentage'] }}%"></div>
                 </div>
             </div>
-            <div class="source-item mt-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-bold">Social Media</span>
-                    <span class="text-muted">18%</span>
-                </div>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-info" style="width: 18%"></div>
-                </div>
-            </div>
-            <div class="source-item mt-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-bold">Referral</span>
-                    <span class="text-muted">12%</span>
-                </div>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-warning" style="width: 12%"></div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 
     <div class="chart-card">
         <div class="chart-header">
-            <h3 class="chart-title">Device Usage</h3>
-            <p class="chart-subtitle">User device preferences</p>
+            <h3 class="chart-title">Active Users</h3>
+            <p class="chart-subtitle">Last 7 days activity</p>
         </div>
-        <canvas id="deviceChart"></canvas>
+        <div class="p-4 text-center">
+            <div class="display-4 text-primary mb-3">{{ $activeUsers }}</div>
+            <p class="text-muted">Active users in the last week</p>
+        </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
 <script>
-// Colors setup
 const colors = {
     primary: '#6366f1',
     secondary: '#8b5cf6',
@@ -199,61 +183,16 @@ const colors = {
     info: '#06b6d4'
 };
 
-// Product Categories Chart
-const productCategoriesCtx = document.getElementById('productCategoriesChart').getContext('2d');
-const productCategoriesChart = new Chart(productCategoriesCtx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Electronics', 'Clothing', 'Food', 'Books', 'Others'],
-        datasets: [{
-            data: [35, 25, 20, 12, 8],
-            backgroundColor: [
-                colors.primary,
-                colors.secondary,
-                colors.danger,
-                colors.success,
-                colors.warning
-            ],
-            borderWidth: 0,
-            hoverOffset: 10
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    padding: 15,
-                    usePointStyle: true,
-                    font: { size: 12 }
-                }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                padding: 12,
-                cornerRadius: 8,
-                callbacks: {
-                    label: function(context) {
-                        return context.label + ': ' + context.parsed + '%';
-                    }
-                }
-            }
-        },
-        cutout: '65%'
-    }
-});
-
-// User Activity by Hour Chart
+// User Activity by Hour
+const hourlyData = @json($hourlyData);
 const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
 const userActivityChart = new Chart(userActivityCtx, {
     type: 'bar',
     data: {
-        labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+        labels: hourlyData.map(d => d.hour),
         datasets: [{
             label: 'Visitors',
-            data: [120, 80, 150, 380, 520, 480, 620, 450],
+            data: hourlyData.map(d => d.visitors),
             backgroundColor: (context) => {
                 const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
                 gradient.addColorStop(0, colors.primary);
@@ -290,21 +229,18 @@ const userActivityChart = new Chart(userActivityCtx, {
     }
 });
 
-// Device Usage Chart
+// Device Chart
+const deviceData = @json($deviceData);
 const deviceCtx = document.getElementById('deviceChart').getContext('2d');
 const deviceChart = new Chart(deviceCtx, {
-    type: 'pie',
+    type: 'doughnut',
     data: {
-        labels: ['Desktop', 'Mobile', 'Tablet'],
+        labels: deviceData.map(d => d.device),
         datasets: [{
-            data: [45, 42, 13],
-            backgroundColor: [
-                colors.primary,
-                colors.success,
-                colors.warning
-            ],
+            data: deviceData.map(d => d.percentage),
+            backgroundColor: [colors.primary, colors.success, colors.warning],
             borderWidth: 0,
-            hoverOffset: 8
+            hoverOffset: 10
         }]
     },
     options: {
@@ -329,13 +265,12 @@ const deviceChart = new Chart(deviceCtx, {
                     }
                 }
             }
-        }
+        },
+        cutout: '65%'
     }
 });
 
-// Resize charts on window resize
 window.addEventListener('resize', function() {
-    productCategoriesChart.resize();
     userActivityChart.resize();
     deviceChart.resize();
 });

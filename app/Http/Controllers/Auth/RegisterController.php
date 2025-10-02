@@ -40,5 +40,21 @@ class RegisterController extends Controller
             'role' => $data['role'],
         ]);
 }
+//     protected function admin_create(array $data)
+//     {
+//         $avatarPath = 'assets/img/users/default.png';
+//         if (isset($data['avatar']) && $data['avatar']->isValid()) {
+//             $imageName = Str::uuid()->toString() . '.' . $data['avatar']->getClientOriginalExtension();
+//             $data['avatar']->move(public_path('assets/img/users'), $imageName);
+//             $avatarPath = 'assets/img/users/' . $imageName;
+//         }
+//         return User::create([
+//             'name' => $data['name'],
+//             'email' => $data['email'],
+//             'avatar' => $avatarPath,
+//             'password' => Hash::make($data['password']),
+//             'role' => $data['role'],
+//         ]);
+// }
 
 }

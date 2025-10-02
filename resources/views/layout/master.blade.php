@@ -66,7 +66,9 @@
                                 @if(Auth::check() && Auth::user() && Auth::user()->role === 'admin')
                                     <li><a href="{{ route('productstable') }}">{{ trans('string.products') }}</a></li>
                                 @endif
-                                @if(Auth::check() && Auth::user() && Auth::user()->role === 'seller' or Auth::user()->role === 'admin')
+                                @if(Auth::check() && (Auth::user()->role === 'seller' || Auth::user()->role === 'admin'))
+
+                                {{-- @if(Auth::check() && Auth::user() && Auth::user()->role === 'seller' or Auth::user()->role === 'admin') --}}
                                     {{-- <li><a href="{{ route('productstable') }}">{{ trans('string.products') }}</a></li> --}}
                                     <li><a href="{{ route('addproduct') }}">{{ trans('string.Add product') }}</a></li>
                                 @endif

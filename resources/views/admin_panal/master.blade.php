@@ -34,7 +34,7 @@
                     <i class="mdi mdi-account-multiple"></i>
                     <span>Users</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="{{route('sales')}}" class="menu-item">
                     <i class="mdi mdi-shopping"></i>
                     <span>Sales</span>
                 </a>

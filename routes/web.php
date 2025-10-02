@@ -5,6 +5,8 @@ use App\Http\Controllers\FirstController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\SalesController;
+use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,15 +42,23 @@ Route::middleware(['auth','CheckRole:seller,admin'])->group(function () {
 
 Route::middleware(['auth','CheckRole:admin'])->group(function () {
     Route::get("/admin/login",[AdminController::class,"login"])->name("admin_login_page");
+    Route::get("/admin/addusers",[AdminController::class,"addusers"])->name("admin_addusers_page");
     Route::post("/api/admin/login_check",[AdminController::class,"login_check"])->name("admin_login_check");
     Route::post('/login-check', [AdminController::class, 'login_check'])->name('admin_login_check');
     Route::get('/admin/adminpanal', [AdminController::class, 'adminpanal'])->name('adminpanal');
-    Route::get('/admin/analytics', [AdminController::class, 'analytics'])->name('analytics');
+    // Route::get('/admin/analytics', [AdminController::class, 'analytics'])->name('analytics');
+    Route::get('/admin/analytics', [AnalyticsController::class, 'index'])->name('analytics');
     Route::get('/admin/users', [AdminController::class, 'users_table'])->name('users');
+    Route::get('/admin/sales', [SalesController::class, 'index'])->name('sales');
+    Route::get('/admin/report', [SalesController::class, 'index'])->name('report');
     Route::get('/api/users', [AdminController::class, 'show_users']);
     Route::put('/api/users/{id}', [AdminController::class, 'update_user']);
     Route::delete('/api/users/{id}', [AdminController::class, 'delete_user']);
 });
+// في routes/web.php
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+// });
 Route::middleware('auth')->group(function () {
     // Product Management Routes
     // Route::get("/products", [ProductController::class, 'products'])->name("products");
@@ -62,7 +72,7 @@ Route::middleware('auth')->group(function () {
     // Route::post("/add_product_image/{product_id}",[ProductController::class,"add_product_image"])->name("add_product_image");
     // Cart Routes
     Route::get("/cart", [CartController::class, 'cart'])->name("cart");
-    Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
+    Route::get('/api/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
     Route::post("/add_to_cart", [CartController::class, 'add_to_cart'])->name("add_to_cart");
     Route::post("/remove_from_cart", [CartController::class, 'remove_from_cart'])->name("remove_from_cart");
     Route::post("/change_quantity", [CartController::class, 'change_quantity'])->name("change_quantity");

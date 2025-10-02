@@ -133,9 +133,8 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
-
         // استدعاء VisitsTableSeeder
         $this->call(VisitsTableSeeder::class);
+        $this->call(PageViewsTableSeeder::class);
     }
 }
-// 12
