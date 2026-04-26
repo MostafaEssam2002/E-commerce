@@ -3,7 +3,7 @@
     <div class="checkout-section mt-150 mb-150">
         <div class="container">
             <div class="row">
-                @foreach ($last_orders as $item)
+                @forelse ($last_orders as $item)
                     <div class="col-lg-12">
                         <div class="checkout-accordion-wrap">
                             <div class="accordion mt-2 mb-2" id="accordionExample{{ $loop->index }}">
@@ -139,15 +139,22 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Empty Cart Message -->
-                    <div id="empty-cart-message" style="display: none; text-align: center; padding: 50px;">
-                        <h3>Your cart is empty</h3>
-                        <p>Add some products to your cart to see them here.</p>
+                @empty
+                    <div class="col-lg-12 text-center py-5">
+                        <h3>Your orders list is empty</h3>
+                        <p>Add products and complete a purchase to see your orders here.</p>
                         <a href="{{ route('prods') }}" class="boxed-btn">Continue Shopping</a>
                     </div>
-                @endforeach
+                @endforelse
             </div>
+
+            @if ($last_orders->hasPages())
+                <div class="row mt-4">
+                    <div class="col-12 d-flex justify-content-center">
+                        {{ $last_orders->links() }}
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 @endsection

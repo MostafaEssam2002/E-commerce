@@ -12,11 +12,12 @@ class VisitsTableSeeder extends Seeder
     public function run()
     {
         $users = User::pluck('id')->toArray(); // كل الـ user_id
-        $totalVisits = 10000;
+        $totalVisits = 15000;
+        $year = now()->year;
 
         // الفترة الزمنية المطلوبة
-        $startDate = Carbon::create(2025, 1, 1, 0, 0, 0);
-        $endDate   = Carbon::create(2025, 12, 31, 23, 59, 59);
+        $startDate = Carbon::create($year, 1, 1, 0, 0, 0);
+        $endDate   = Carbon::create($year, 12, 31, 23, 59, 59);
 
         $data = [];
 

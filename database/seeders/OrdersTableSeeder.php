@@ -15,8 +15,9 @@ class OrdersTableSeeder extends Seeder
         $users = User::pluck('id')->toArray();
         $products = Product::all();
         $totalOrders = 100;
-        $startDate = Carbon::create(2025, 1, 1, 0, 0, 0);
-        $endDate   = Carbon::create(2025, 12, 31, 23, 59, 59);
+        $year = now()->year;
+        $startDate = Carbon::create($year, 1, 1, 0, 0, 0);
+        $endDate   = Carbon::create($year, 12, 31, 23, 59, 59);
         for ($i = 0; $i < $totalOrders; $i++) {
             // تاريخ عشوائي للـ order
             $randomDate = Carbon::createFromTimestamp(

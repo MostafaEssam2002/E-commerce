@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\categories;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class SalesController extends Controller
 {
@@ -37,7 +38,26 @@ class SalesController extends Controller
         // ========== الأداء الشهري (آخر 6 شهور) ==========
         $monthlyPerformance = $this->getMonthlyPerformance();
 
-        return view('admin_panal.sales', array_merge(
+        return view('admin_panal.sales', $this->buildReportData($stats, $comparisons, $dailySales, $topProducts, $categoryData, $recentOrders, $topCustomers, $monthlyPerformance));
+    }
+
+    public function reports()
+    {
+        $stats = $this->getBasicStats();
+        $comparisons = $this->getMonthlyComparisons();
+        $dailySales = $this->getDailySales();
+        $topProducts = $this->getTopProducts();
+        $categoryData = $this->getCategorySales();
+        $recentOrders = $this->getRecentOrders();
+        $topCustomers = $this->getTopCustomers();
+        $monthlyPerformance = $this->getMonthlyPerformance();
+
+        return view('admin_panal.reports', $this->buildReportData($stats, $comparisons, $dailySales, $topProducts, $categoryData, $recentOrders, $topCustomers, $monthlyPerformance));
+    }
+
+    private function buildReportData($stats, $comparisons, $dailySales, $topProducts, $categoryData, $recentOrders, $topCustomers, $monthlyPerformance)
+    {
+        return array_merge(
             $stats,
             $comparisons,
             compact(
@@ -48,7 +68,23 @@ class SalesController extends Controller
                 'topCustomers',
                 'monthlyPerformance'
             )
-        ));
+        );
+    }
+
+    private function getSelectedMonthAndYear()
+    {
+        $month = session('selected_month', now()->month);
+        $year = session('selected_year', now()->year);
+
+        if (!is_numeric($month) || $month < 1 || $month > 12) {
+            $month = now()->month;
+        }
+
+        if (!is_numeric($year) || $year < 2000 || $year > 2100) {
+            $year = now()->year;
+        }
+
+        return compact('month', 'year');
     }
 
     /**
@@ -56,9 +92,23 @@ class SalesController extends Controller
      */
     private function getBasicStats()
     {
-        $totalSales = OrderDetail::sum(DB::raw('price * quantity'));
-        $completedOrders = Order::where('status', 'completed')->count();
-        $pendingOrders = Order::where('status', 'pending')->count();
+        $selected = $this->getSelectedMonthAndYear();
+
+        $totalSales = OrderDetail::whereHas('order', function ($q) use ($selected) {
+            $q->whereMonth('created_at', $selected['month'])
+              ->whereYear('created_at', $selected['year']);
+        })->sum(DB::raw('price * quantity'));
+
+        $completedOrders = Order::where('status', 'completed')
+            ->whereMonth('created_at', $selected['month'])
+            ->whereYear('created_at', $selected['year'])
+            ->count();
+
+        $pendingOrders = Order::where('status', 'pending')
+            ->whereMonth('created_at', $selected['month'])
+            ->whereYear('created_at', $selected['year'])
+            ->count();
+
         $avgOrderValue = $completedOrders > 0 ? $totalSales / $completedOrders : 0;
 
         return compact('totalSales', 'completedOrders', 'pendingOrders', 'avgOrderValue');
@@ -69,10 +119,14 @@ class SalesController extends Controller
      */
     private function getMonthlyComparisons()
     {
-        $currentMonth = now()->month;
-        $currentYear = now()->year;
-        $lastMonth = now()->subMonth()->month;
-        $lastMonthYear = now()->subMonth()->year;
+        $selected = $this->getSelectedMonthAndYear();
+        $currentMonth = $selected['month'];
+        $currentYear = $selected['year'];
+
+        $selectedDate = Carbon::createFromDate($currentYear, $currentMonth, 1);
+        $lastDate = $selectedDate->copy()->subMonth();
+        $lastMonth = $lastDate->month;
+        $lastMonthYear = $lastDate->year;
 
         // مبيعات الشهر الحالي
         $currentMonthSales = OrderDetail::whereHas('order', function($q) use ($currentMonth, $currentYear) {
@@ -107,14 +161,16 @@ class SalesController extends Controller
     }
 
     /**
-     * المبيعات اليومية آخر 30 يوم
+     * المبيعات اليومية في الشهر المحدد
      */
     private function getDailySales()
     {
-        return OrderDetail::whereHas('order', function($q) {
-                $q->where('created_at', '>=', now()->subDays(30));
-            })
-            ->join('orders', 'order_details.order_id', '=', 'orders.id')
+        $selected = $this->getSelectedMonthAndYear();
+        $start = Carbon::createFromDate($selected['year'], $selected['month'], 1)->startOfMonth();
+        $end = $start->copy()->endOfMonth();
+
+        return OrderDetail::join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->whereBetween('orders.created_at', [$start, $end])
             ->selectRaw('DATE(orders.created_at) as date, SUM(order_details.price * order_details.quantity) as amount')
             ->groupBy('date')
             ->orderBy('date')
@@ -132,8 +188,12 @@ class SalesController extends Controller
      */
     private function getTopProducts()
     {
+        $selected = $this->getSelectedMonthAndYear();
         return Product::select('products.id', 'products.name', 'products.image_path')
             ->join('order_details', 'products.id', '=', 'order_details.product_id')
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->whereMonth('orders.created_at', $selected['month'])
+            ->whereYear('orders.created_at', $selected['year'])
             ->selectRaw('SUM(order_details.price * order_details.quantity) as revenue')
             ->selectRaw('SUM(order_details.quantity) as total_sold')
             ->groupBy('products.id', 'products.name', 'products.image_path')
@@ -147,9 +207,13 @@ class SalesController extends Controller
      */
     private function getCategorySales()
     {
+        $selected = $this->getSelectedMonthAndYear();
         return categories::select('categories.id', 'categories.name', 'categories.image_path')
             ->join('products', 'categories.id', '=', 'products.category_id')
             ->join('order_details', 'products.id', '=', 'order_details.product_id')
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->whereMonth('orders.created_at', $selected['month'])
+            ->whereYear('orders.created_at', $selected['year'])
             ->selectRaw('SUM(order_details.price * order_details.quantity) as value')
             ->selectRaw('COUNT(DISTINCT order_details.order_id) as orders_count')
             ->groupBy('categories.id', 'categories.name', 'categories.image_path')
@@ -164,6 +228,7 @@ class SalesController extends Controller
     {
         $sortBy = request()->get('sort_by', 'created_at');
         $sortDir = request()->get('sort_dir', 'desc');
+        $selected = $this->getSelectedMonthAndYear();
 
         // التأكد من أن الترتيب آمن
         $allowedSorts = ['id', 'created_at', 'status'];
@@ -174,6 +239,8 @@ class SalesController extends Controller
         $sortDir = in_array($sortDir, ['asc', 'desc']) ? $sortDir : 'desc';
 
         $orders = Order::with(['user', 'orderDetails.product'])
+            ->whereMonth('created_at', $selected['month'])
+            ->whereYear('created_at', $selected['year'])
             ->orderBy($sortBy, $sortDir)
             ->limit(10)
             ->get()
@@ -210,9 +277,12 @@ class SalesController extends Controller
      */
     private function getTopCustomers()
     {
+        $selected = $this->getSelectedMonthAndYear();
         return User::select('users.id', 'users.name', 'users.email', 'users.avatar')
             ->join('orders', 'users.id', '=', 'orders.user_id')
             ->join('order_details', 'orders.id', '=', 'order_details.order_id')
+            ->whereMonth('orders.created_at', $selected['month'])
+            ->whereYear('orders.created_at', $selected['year'])
             ->selectRaw('COUNT(DISTINCT orders.id) as orders_count')
             ->selectRaw('SUM(order_details.price * order_details.quantity) as total_amount')
             ->groupBy('users.id', 'users.name', 'users.email', 'users.avatar')
@@ -227,9 +297,11 @@ class SalesController extends Controller
     private function getMonthlyPerformance()
     {
         $performance = [];
+        $selected = $this->getSelectedMonthAndYear();
+        $baseDate = Carbon::createFromDate($selected['year'], $selected['month'], 1);
 
         for ($i = 5; $i >= 0; $i--) {
-            $month = now()->subMonths($i);
+            $month = $baseDate->copy()->subMonths($i);
 
             $sales = OrderDetail::whereHas('order', function($q) use ($month) {
                 $q->whereYear('created_at', $month->year)

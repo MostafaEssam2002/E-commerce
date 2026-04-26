@@ -9,19 +9,14 @@
                     <div class="product-filters">
                         <ul>
                             <li class="active" data-filter="*">All</li>
-                            @if(session("locale") == "ar")
-                                {{-- <li data-filter="._0">الكل</li> --}}
-                                @foreach ($categories as $category)
+                            @php $locale = session('locale', 'en'); @endphp
+                            @foreach ($categories as $category)
+                                @if($locale == 'ar')
                                     <li data-filter="._{{$category->id}}">{{$category->name_AR}}</li>
-                                @endforeach
-                                {{-- @endforeach --}}
-                                @elseif(session("locale") == "en")
-                                @foreach ($categories as $category)
+                                @else
                                     <li data-filter="._{{$category->id}}">{{$category->name}}</li>
-                                @endforeach
-                                {{-- <li data-filter="._0">All</li> --}}
-                            @endif
-
+                                @endif
+                            @endforeach
                         </ul>
                     </div>
                 </div>

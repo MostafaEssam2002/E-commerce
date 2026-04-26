@@ -22,27 +22,27 @@
                 <h3><i class="mdi mdi-view-dashboard"></i> Dashboard</h3>
             </div>
             <div class="sidebar-menu">
-                <a href="{{route("adminpanal")}}" class="menu-item active">
+                <a href="{{ route('adminpanal') }}" class="menu-item {{ request()->routeIs('adminpanal') ? 'active' : '' }}">
                     <i class="mdi mdi-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="{{route('analytics')}}" class="menu-item">
+                <a href="{{ route('analytics') }}" class="menu-item {{ request()->routeIs('analytics') ? 'active' : '' }}">
                     <i class="mdi mdi-chart-line"></i>
                     <span>Analytics</span>
                 </a>
-                <a href="{{route("users")}}" class="menu-item">
+                <a href="{{ route('users') }}" class="menu-item {{ request()->routeIs('users') ? 'active' : '' }}">
                     <i class="mdi mdi-account-multiple"></i>
                     <span>Users</span>
                 </a>
-                <a href="{{route('sales')}}" class="menu-item">
+                <a href="{{ route('sales') }}" class="menu-item {{ request()->routeIs('sales') ? 'active' : '' }}">
                     <i class="mdi mdi-shopping"></i>
                     <span>Sales</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="{{ route('reports') }}" class="menu-item {{ request()->routeIs('reports') ? 'active' : '' }}">
                     <i class="mdi mdi-file-document"></i>
                     <span>Reports</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="{{ route('settings') }}" class="menu-item {{ request()->routeIs('settings') ? 'active' : '' }}">
                     <i class="mdi mdi-cog"></i>
                     <span>Settings</span>
                 </a>

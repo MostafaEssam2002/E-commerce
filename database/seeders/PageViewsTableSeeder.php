@@ -80,9 +80,11 @@ class PageViewsTableSeeder extends Seeder
             'https://twitter.com',
         ];
 
+        $year = now()->year;
+
         // الفترة الزمنية
-        $startDate = Carbon::create(2025, 1, 1, 0, 0, 0);
-        $endDate = Carbon::create(2025, 12, 31, 23, 59, 59);
+        $startDate = Carbon::create($year, 1, 1, 0, 0, 0);
+        $endDate = Carbon::create($year, 12, 31, 23, 59, 59);
 
         // عدد المشاهدات الكلي (50,000 لبيانات واضحة)
         $totalPageViews = 50000;
@@ -114,9 +116,9 @@ class PageViewsTableSeeder extends Seeder
             $second = rand(0, 59);
 
             try {
-                $randomDate = Carbon::create(2025, $month, min($dayInMonth, 28), $hour, $minute, $second);
+                $randomDate = Carbon::create($year, $month, min($dayInMonth, 28), $hour, $minute, $second);
             } catch (\Exception $e) {
-                $randomDate = Carbon::create(2025, $month, 1, $hour, $minute, $second);
+                $randomDate = Carbon::create($year, $month, 1, $hour, $minute, $second);
             }
 
             // اختيار صفحة بناءً على الوزن

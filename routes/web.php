@@ -50,7 +50,9 @@ Route::middleware(['auth','CheckRole:admin'])->group(function () {
     Route::get('/admin/analytics', [AnalyticsController::class, 'index'])->name('analytics');
     Route::get('/admin/users', [AdminController::class, 'users_table'])->name('users');
     Route::get('/admin/sales', [SalesController::class, 'index'])->name('sales');
-    Route::get('/admin/report', [SalesController::class, 'index'])->name('report');
+    Route::get('/admin/reports', [SalesController::class, 'reports'])->name('reports');
+    Route::get('/admin/settings', [AdminController::class, 'settings'])->name('settings');
+    Route::post('/admin/settings/month', [AdminController::class, 'updateSelectedMonth'])->name('settings.update_month');
     Route::get('/api/users', [AdminController::class, 'show_users']);
     Route::put('/api/users/{id}', [AdminController::class, 'update_user']);
     Route::delete('/api/users/{id}', [AdminController::class, 'delete_user']);
@@ -80,6 +82,8 @@ Route::middleware('auth')->group(function () {
     Route::get("/completeorder",[CartController::class,"completeorder"])->name("completeorder");
     Route::post("/storeorder",[CartController::class,"storeorder"])->name("storeorder");
     Route::get("/lastorders",[CartController::class,"lastorders"])->name("lastorders");
+    Route::get('/settings', [CartController::class, 'userSettings'])->name('user.settings');
+    Route::post('/settings', [CartController::class, 'updateUserSettings'])->name('user.settings.update');
 });
 Route::post('/change_lang', [FirstController::class, 'change_lang'])->name('change_lang');
 // Route::get('/test');

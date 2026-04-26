@@ -61,19 +61,19 @@
                         <!-- menu start -->
                         <nav class="main-menu">
                             <ul>
-                                <li class="current-list-item"><a href="/">{{ trans('string.home') }}</a></li>
-                                <li><a href="{{ route('products') }}">{{ trans('string.products') }}</a></li>
+                                <li class="{{ request()->is('/') ? 'current-list-item' : '' }}"><a href="/">{{ trans('string.home') }}</a></li>
+                                <li class="{{ request()->routeIs('products') ? 'current-list-item' : '' }}"><a href="{{ route('products') }}">{{ trans('string.products') }}</a></li>
                                 @if(Auth::check() && Auth::user() && Auth::user()->role === 'admin')
-                                    <li><a href="{{ route('productstable') }}">{{ trans('string.products') }}</a></li>
+                                    <li class="{{ request()->routeIs('productstable') ? 'current-list-item' : '' }}"><a href="{{ route('productstable') }}">{{ trans('string.products') }}</a></li>
                                 @endif
                                 @if(Auth::check() && (Auth::user()->role === 'seller' || Auth::user()->role === 'admin'))
 
                                 {{-- @if(Auth::check() && Auth::user() && Auth::user()->role === 'seller' or Auth::user()->role === 'admin') --}}
                                     {{-- <li><a href="{{ route('productstable') }}">{{ trans('string.products') }}</a></li> --}}
-                                    <li><a href="{{ route('addproduct') }}">{{ trans('string.Add product') }}</a></li>
+                                    <li class="{{ request()->routeIs('addproduct') ? 'current-list-item' : '' }}"><a href="{{ route('addproduct') }}">{{ trans('string.Add product') }}</a></li>
                                 @endif
-                                <li><a href="{{ route('cats') }}">{{ trans('string.category') }}</a></li>
-                                <li><a href="{{ route('reviews') }}">{{ trans('string.Reviews') }}</a></li>
+                                <li class="{{ request()->routeIs('cats') ? 'current-list-item' : '' }}"><a href="{{ route('cats') }}">{{ trans('string.category') }}</a></li>
+                                <li class="{{ request()->routeIs('reviews') ? 'current-list-item' : '' }}"><a href="{{ route('reviews') }}">{{ trans('string.Reviews') }}</a></li>
                                 @guest
                                     @if (Route::has('login'))
                                         <li class="nav-item"><a href="{{ route('login') }}">{{ __('Login') }}</a></li>
@@ -118,11 +118,11 @@
                                         </a>
                                         <ul class="sub-menu">
                                             <li>
-                                                <a href="{{route('lastorders')}}" class="dropdown-item">
+                                                <a href="{{ route('lastorders') }}" class="dropdown-item">
                                                     <span class="logout-icon">👤</span> profile</a>
                                             </li>
                                             <li>
-                                                <a href="#" class="dropdown-item">
+                                                <a href="{{ route('user.settings') }}" class="dropdown-item">
                                                     <span class="logout-icon">⚙️</span>
                                                     settings
                                                 </a>
@@ -199,7 +199,6 @@
                                 <h1>Delicious Seasonal Fruits</h1>
                                 <div class="hero-btns">
                                     <a href="shop.html" class="boxed-btn">Fruit Collection</a>
-                                    <a href="contact.html" class="bordered-btn">Contact Us</a>
                                 </div>
                             </div>
                         </div>
@@ -218,7 +217,6 @@
                                 <h1>{{ trans('string.100% Organic Collection') }}</h1>
                                 <div class="hero-btns">
                                     <a href="shop.html" class="boxed-btn">Visit Shop</a>
-                                    <a href="contact.html" class="bordered-btn">Contact Us</a>
                                 </div>
                             </div>
                         </div>
@@ -237,7 +235,6 @@
                                 <h1>Get December Discount</h1>
                                 <div class="hero-btns">
                                     <a href="shop.html" class="boxed-btn">Visit Shop</a>
-                                    <a href="contact.html" class="bordered-btn">Contact Us</a>
                                 </div>
                             </div>
                         </div>
@@ -276,8 +273,6 @@
                             <li><a href="index.html">Home</a></li>
                             <li><a href="about.html">About</a></li>
                             <li><a href="services.html">Shop</a></li>
-                            <li><a href="news.html">News</a></li>
-                            <li><a href="contact.html">Contact</a></li>
                         </ul>
                     </div>
                 </div>

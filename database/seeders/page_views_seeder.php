@@ -13,7 +13,7 @@ class PageViewsTableSeeder extends Seeder
     {
         // جلب IDs المستخدمين من 1 إلى 100
         $userIds = User::whereBetween('id', [1, 100])->pluck('id')->toArray();
-        
+
         if (empty($userIds)) {
             $this->command->error('لا يوجد مستخدمين في قاعدة البيانات!');
             return;
@@ -74,9 +74,11 @@ class PageViewsTableSeeder extends Seeder
             'https://www.youtube.com',
         ];
 
+        $year = now()->year;
+
         // الفترة الزمنية
-        $startDate = Carbon::create(2025, 1, 1, 0, 0, 0);
-        $endDate = Carbon::create(2025, 12, 31, 23, 59, 59);
+        $startDate = Carbon::create($year, 1, 1, 0, 0, 0);
+        $endDate = Carbon::create($year, 12, 31, 23, 59, 59);
 
         // عدد المشاهدات المطلوبة
         $totalPageViews = 10000;
@@ -133,7 +135,7 @@ class PageViewsTableSeeder extends Seeder
         // إدخال البيانات على دفعات
         $this->command->info('جاري إدخال البيانات في قاعدة البيانات...');
         $chunks = array_chunk($data, 500);
-        
+
         foreach ($chunks as $index => $chunk) {
             DB::table('page_views')->insert($chunk);
             $this->command->info('تم إدخال الدفعة ' . ($index + 1) . ' من ' . count($chunks));
@@ -149,14 +151,14 @@ class PageViewsTableSeeder extends Seeder
     {
         $total = array_sum($weights);
         $random = rand(1, $total);
-        
+
         foreach ($weights as $key => $weight) {
             $random -= $weight;
             if ($random <= 0) {
                 return $key;
             }
         }
-        
+
         return array_key_first($weights);
     }
 }

@@ -6,6 +6,8 @@ use App\Models\Copon;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 // use Illuminate\Support\Facades\Redirect;
 class CartController extends Controller
 {
@@ -87,6 +89,48 @@ class CartController extends Controller
         $count = Cart::where("user_id", Auth::user()->id)->count();
         return response()->json(['count' => $count]);
     }
+
+    public function userSettings()
+    {
+        return view('profile.settings', [
+            'user' => Auth::user(),
+        ]);
+    }
+
+    public function updateUserSettings(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore(Auth::id()),
+            ],
+            'password' => 'nullable|string|min:6|confirmed',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+
+        $user = Auth::user();
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('avatar')) {
+            $avatar = $request->file('avatar');
+            $avatarName = uniqid('avatar_') . '.' . $avatar->getClientOriginalExtension();
+            $avatar->move(public_path('assets/img/users'), $avatarName);
+            $user->avatar = 'assets/img/users/' . $avatarName;
+        }
+
+        $user->save();
+
+        return back()->with('status', 'Account settings updated successfully.');
+    }
+
     function change_quantity(Request $request){
         try {
             $quantity = $request->quantity;
@@ -193,19 +237,21 @@ class CartController extends Controller
         return back();
     }
     public function lastorders(){
-        $user_id =Auth::user()->id; ;
-        // $last_orders = Order::where("user_id",Auth::user()->id)->get();
-        if($user_id == 1){
-            $last_orders = Order::with("orderDetails")->get();
-            return view("products.lastorders",["last_orders"=>$last_orders]);
-        }
-        // 17
-        elseif($user_id > 1){
-            $last_orders = Order::with("orderDetails")->where("user_id",$user_id)->get();
-            return view("products.lastorders",["last_orders"=>$last_orders]);
-        }
-        else{
+        $user_id = Auth::user()->id;
+
+        if ($user_id == 1) {
+            $last_orders = Order::with("orderDetails")
+                ->orderByDesc("created_at")
+                ->paginate(10);
+        } elseif ($user_id > 1) {
+            $last_orders = Order::with("orderDetails")
+                ->where("user_id", $user_id)
+                ->orderByDesc("created_at")
+                ->paginate(10);
+        } else {
             return back();
         }
+
+        return view("products.lastorders", ["last_orders" => $last_orders]);
     }
 }
